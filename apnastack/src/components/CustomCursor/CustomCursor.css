@@ -1,0 +1,33 @@
+.cursor-dot {
+  position: fixed;
+  top: 0; left: 0;
+  width: 12px; height: 12px;
+  background: #00ffe0;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: difference;
+  box-shadow: 0 0 12px #00ffe0, 0 0 24px #00ffe066;
+  will-change: transform;
+}
+
+.cursor-trail {
+  position: fixed;
+  top: 0; left: 0;
+  width: 32px; height: 32px;
+  border: 1.5px solid #00ffe066;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  will-change: transform;
+  transition: border-color 0.3s;
+}
+
+.cursor-particle {
+  position: fixed;
+  border-radius: 50%;
+  background: radial-gradient(circle, #00ffe0, #7c3aed00);
+  pointer-events: none;
+  z-index: 9997;
+  transform: translate(-50%, -50%);
+}

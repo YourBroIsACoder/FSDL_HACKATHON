@@ -1,20 +1,22 @@
-import { Suspense, useRef, useEffect } from 'react'
-import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { Suspense, useEffect, useRef } from 'react'
+import { Canvas, useThree } from '@react-three/fiber'
 import { Preload } from '@react-three/drei'
-import { EffectComposer, Bloom, ChromaticAberration } from '@react-three/postprocessing'
-import * as THREE from 'three'
+import { EffectComposer, Bloom, ChromaticAberration, DepthOfField } from '@react-three/postprocessing'
 
 import CustomCursor from './components/CustomCursor/CustomCursor'
 import ControlPanel from './components/ControlPanel/ControlPanel'
 import CodePanel from './components/CodePanel/CodePanel'
+import TabNavigation from './components/TabNavigation/TabNavigation'
 import SceneManager from './components/SceneManager'
+import LandingOverlay from './components/LandingOverlay'
+import IntroOverlay from './components/IntroOverlay'
+import AmbientParticles from './components/AmbientParticles'
 
-import { useSceneScroll } from './hooks/useSceneScroll'
 import { useAppStore } from './store/dsStore'
 import { useAudio } from './hooks/useAudio'
 
-// Separate Rig for Camera and Effects
-function CameraRig({ velocity }) {
+// Handles camera responsiveness
+function CameraRig() {
   const { camera, size } = useThree()
   
   useEffect(() => {
@@ -26,27 +28,24 @@ function CameraRig({ velocity }) {
   return null
 }
 
-function PostProcessing({ velocity }) {
-  const absV = Math.abs(velocity)
-  const offset = Math.min(absV * 0.005, 0.04)
-  
+function PostProcessing() {
   return (
     <EffectComposer disableNormalPass>
+      {/* Reduced DOF blur to maintain text clarity on components */}
+      <DepthOfField focusDistance={0} focalLength={0.01} bokehScale={1.2} />
       <Bloom luminanceThreshold={0.5} mipmapBlur intensity={1.2} />
-      <ChromaticAberration offset={[offset, offset]} />
+      <ChromaticAberration offset={[0.001, 0.001]} />
     </EffectComposer>
   )
 }
 
 export default function App() {
-  // Drives the overall page scroll and maps it to a zustand `currentScene` index
-  const { progress, velocity } = useSceneScroll()
-  
   // Audio synths
   const { play } = useAudio()
 
   // Zustand State
   const currentScene = useAppStore(s => s.currentScene)
+  const hasSeenIntro = useAppStore(s => s.hasSeenIntro)
   const lastOp = useAppStore(s => s.lastOp)
   const logOp = useAppStore(s => s.logOp)
 
@@ -63,8 +62,29 @@ export default function App() {
   const graphAddEdge = useAppStore(s => s.graphAddEdge)
   const graphNodes = useAppStore(s => s.graphNodes)
 
+  const dpFillCell = useAppStore(s => s.dpFillCell)
+  const dpSetHighlights = useAppStore(s => s.dpSetHighlights)
+  const dpSetMatrix = useAppStore(s => s.dpSetMatrix)
+
+  const btSetState = useAppStore(s => s.btSetState)
+
+  const dcBoxes = useAppStore(s => s.dcBoxes)
+  const dcSetBoxes = useAppStore(s => s.dcSetBoxes)
+
+  const greedySetState = useAppStore(s => s.greedySetState)
+
+  const recursionSetFrames = useAppStore(s => s.recursionSetFrames)
+
+  const sortArray = useAppStore(s => s.sortArray)
+  const sortSetArray = useAppStore(s => s.sortSetArray)
+  const sortSetHighlights = useAppStore(s => s.sortSetHighlights)
+
   const speed = useAppStore(s => s.speed)
   const setActiveLine = useAppStore(s => s.setActiveLine)
+  const activeLine = useAppStore(s => s.activeLine)
+
+  // Animation Concurrency Lock
+  const activeAnimId = useRef(0)
 
   // Handlers
   const handleOperation = async (opId, value) => {
@@ -72,24 +92,37 @@ export default function App() {
     play(opId)
     
     const valObj = value || Math.floor(Math.random() * 100)
+    
+    const animId = Date.now()
+    activeAnimId.current = animId
+    const checkCancel = () => { if (activeAnimId.current !== animId) throw new Error('CANCELLED') }
+    const delay = async (ms) => { await new Promise(r => setTimeout(r, ms)); checkCancel() }
 
     // Code Line Sequencer
     const sequenceLines = async (count) => {
-      for (let i = 0; i < count; i++) {
-        setActiveLine(i)
-        await new Promise(r => setTimeout(r, 400 / speed))
-      }
-      setActiveLine(-1)
+      try {
+        for (let i = 0; i < count; i++) {
+          setActiveLine(i)
+          await delay(400 / speed)
+        }
+        setActiveLine(-1)
+      } catch(e) {}
     }
 
-    // Determine lines length safely (these numbers match PSEUDOCODE length in CodePanel)
-    let lines = 3
-    if (opId === 'push') lines = 4
-    if (opId === 'pop') lines = 5
-    if (opId === 'dequeue') lines = 5
-    if (opId === 'bfs' || opId === 'dfs') lines = 6
+    // Determine lines length safely
+    let lines = 3;
+    if (opId === 'push') lines = 4;
+    if (opId === 'pop') lines = 5;
+    if (opId === 'dequeue') lines = 5;
+    if (opId === 'bfs' || opId === 'dfs') lines = 6;
+    if (['greedyRun', 'recRun', 'btRun', 'dpRun'].includes(opId)) lines = 5;
 
-    await sequenceLines(lines)
+    const isHeavyAlgo = ['greedyRun', 'recRun', 'btRun', 'dpRun'].includes(opId);
+    if (isHeavyAlgo) {
+        sequenceLines(lines); // run concurrently
+    } else {
+        await sequenceLines(lines);
+    }
 
     // Map UI actions to Zustand store mutations
     switch (opId) {
@@ -97,39 +130,371 @@ export default function App() {
       case 'pop': stackPop(); break;
       case 'enqueue': queueEnqueue(valObj); break;
       case 'dequeue': queueDequeue(); break;
-      case 'addNode': graphAddNode(valObj); break;
+      case 'addNode': graphAddNode(valObj || `N${graphNodes.length}`); break;
       case 'addEdge': 
         if (graphNodes.length > 1) {
-            // randomly connect last node to a previous node
-            const src = graphNodes[graphNodes.length - 1].id
-            const tgt = graphNodes[Math.floor(Math.random() * (graphNodes.length - 1))].id
-            graphAddEdge(src, tgt)
+            let srcId, tgtId;
+            if (value && typeof value === 'string') {
+                let parsed = [];
+                if (value.includes(',')) parsed = value.split(',');
+                else if (value.includes('-')) parsed = value.split('-');
+                
+                if (parsed.length === 2) {
+                    const [srcLabel, tgtLabel] = parsed.map(s => s.trim());
+                    const srcNode = graphNodes.find(n => String(n.label) === srcLabel || String(n.label).endsWith(srcLabel));
+                    const tgtNode = graphNodes.find(n => String(n.label) === tgtLabel || String(n.label).endsWith(tgtLabel));
+                    if (srcNode && tgtNode) {
+                        srcId = srcNode.id;
+                        tgtId = tgtNode.id;
+                    }
+                }
+            }
+            
+            if (!srcId || !tgtId) {
+                // Random fallback
+                srcId = graphNodes[graphNodes.length - 1].id;
+                tgtId = graphNodes[Math.floor(Math.random() * (graphNodes.length - 1))].id;
+            }
+            graphAddEdge(srcId, tgtId);
         }
         break;
       case 'insert': 
-        if (currentScene === 3) llInsert(valObj, linkedList.length); // Linked List
-        if (currentScene === 4) treeInsert(valObj); // Tree
+        if (currentScene === 3) llInsert(valObj, linkedList.length);
+        if (currentScene === 4) treeInsert(valObj);
         break;
       case 'delete':
         if (currentScene === 3 && linkedList.length > 0) llDelete(linkedList[linkedList.length - 1].id);
         break;
       case 'bfs':
-        // A full visual BFS would queue state highlights over time.
-        // For now, we trigger the Tone.js bloom sound effect.
         play('bloom')
+        break;
+      case 'dpRun':
+        const gridSize = parseInt(value) || 4; 
+        const G = Math.min(Math.max(gridSize, 2), 6); // bounded for visuals
+        
+        const runGridTraveler = async () => {
+             try {
+                 let matrix = Array(G).fill(null).map(() => Array(G).fill(null));
+                 dpSetMatrix(matrix);
+                 const dSpeed = 1000 / speed;
+                 
+                 for(let r = 0; r < G; r++) {
+                     for(let c = 0; c < G; c++) {
+                         let val = 1;
+                         let highlights = [];
+                         if (r > 0 || c > 0) {
+                             val = 0;
+                             if (r > 0) { val += matrix[r-1][c]; highlights.push({ r: r-1, c }); }
+                             if (c > 0) { val += matrix[r][c-1]; highlights.push({ r, c: c-1 }); }
+                         }
+                         
+                         dpSetHighlights(highlights);
+                         await delay(dSpeed * 0.4);
+                         
+                         dpFillCell(r, c, val);
+                         matrix[r][c] = val; 
+                         play('push');
+                         
+                         dpSetHighlights([]);
+                         await delay(dSpeed * 0.4);
+                     }
+                 }
+                 play('bloom');
+             } catch(e) {}
+        }
+        runGridTraveler()
+        break;
+      case 'dpReset':
+        dpSetMatrix([])
+        break;
+      case 'btReset':
+        btSetState(4, [-1,-1,-1,-1], null);
+        break;
+      case 'btRun':
+        const nSize = parseInt(value) || 4; 
+        const N = Math.min(Math.max(nSize, 4), 8); // bound 4-8 for visual clarity
+        const btSpeedScale = 1000 / speed;
+        
+        const runQueens = async () => {
+            try {
+                let board = Array(N).fill(-1);
+                btSetState(N, [...board], null);
+                
+                const isSafe = async (row, col) => {
+                    btSetState(N, [...board], { r: row, c: col, status: 'checking' });
+                    play('push');
+                    await delay(btSpeedScale * 0.4);
+                    
+                    for (let i = 0; i < row; i++) {
+                        if (board[i] === col || Math.abs(board[i] - col) === Math.abs(i - row)) {
+                            btSetState(N, [...board], { r: row, c: col, status: 'clash' });
+                            play('pop');
+                            await delay(btSpeedScale * 0.6);
+                            return false;
+                        }
+                    }
+                    btSetState(N, [...board], { r: row, c: col, status: 'placed' });
+                    await delay(btSpeedScale * 0.2);
+                    return true;
+                };
+                
+                const solve = async (row) => {
+                    if (row === N) return true;
+                    for (let col = 0; col < N; col++) {
+                        if (await isSafe(row, col)) {
+                            board[row] = col;
+                            btSetState(N, [...board], null);
+                            if (await solve(row + 1)) return true;
+                            
+                            // backtrack
+                            btSetState(N, [...board], { r: row, c: col, status: 'clash' });
+                            play('pop');
+                            await delay(btSpeedScale * 0.4);
+                            board[row] = -1;
+                            btSetState(N, [...board], null);
+                        }
+                    }
+                    return false;
+                };
+                
+                if (await solve(0)) {
+                    play('bloom');
+                }
+            } catch(e) {}
+        }
+        runQueens();
+        break;
+      case 'dcReset': {
+        const dcInput = value && value.trim();
+        const dcUserArr = dcInput
+          ? dcInput.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n))
+          : [8, 3, 5, 4, 7, 1, 2, 6];
+        const dcArr = dcUserArr.length >= 2 ? dcUserArr : [8, 3, 5, 4, 7, 1, 2, 6];
+        dcSetBoxes([{ id: 'root', level: 0, xOffset: 0, width: dcArr.length, arr: dcArr }]);
+        break;
+      }
+      case 'dcRun':
+        // Divide logic: find all boxes that have width > 1 and split them in half
+        const currentBoxes = dcBoxes.length > 0 ? [...dcBoxes] : [{ id: 'root', level: 0, xOffset: 0, width: 8, arr: [8,3,5,4,7,1,2,6] }];
+        if (dcBoxes.length === 0) {
+            dcSetBoxes(currentBoxes);
+            break;
+        }
+        
+        let didSplit = false;
+        const nextBoxes = [];
+        for (let b of currentBoxes) {
+            if (b.width > 1) {
+                didSplit = true;
+                const mid = Math.floor(b.width / 2);
+                const leftId = b.id + '-L';
+                const rightId = b.id + '-R';
+                const leftWidth = mid;
+                const rightWidth = b.width - mid;
+                
+                // For layout:
+                // Left offset moves left by (rightWidth)/2
+                // Right offset moves right by (leftWidth)/2
+                // Level goes down (+1)
+                
+                nextBoxes.push({
+                   id: leftId,
+                   level: b.level + 1,
+                   xOffset: b.xOffset - (rightWidth * 0.5) - 0.2, // extra 0.2 for gap
+                   width: leftWidth,
+                   arr: b.arr.slice(0, mid)
+                });
+                
+                nextBoxes.push({
+                   id: rightId,
+                   level: b.level + 1,
+                   xOffset: b.xOffset + (leftWidth * 0.5) + 0.2,
+                   width: rightWidth,
+                   arr: b.arr.slice(mid)
+                });
+            } else {
+                nextBoxes.push(b);
+            }
+        }
+        
+        if (didSplit) {
+            play('push')
+            dcSetBoxes(nextBoxes);
+        } else {
+            play('pop') // Already max divided
+        }
+        break;
+      case 'greedyReset':
+        greedySetState(0, []);
+        break;
+      case 'greedyRun':
+        const target = parseInt(value) || 87; // User input flexibility, default 87
+        if (target <= 0) break;
+        
+        const runCoinChange = async () => {
+            try {
+                greedySetState(target, []);
+                let remaining = target;
+                const denoms = [25, 10, 5, 1];
+                let currentCoins = [];
+                
+                // Pause before start
+                await delay(1000 / speed);
+                
+                for (let i = 0; i < denoms.length; i++) {
+                    const coin = denoms[i];
+                    while (remaining >= coin) {
+                        remaining -= coin;
+                        currentCoins.push(coin);
+                        greedySetState(target, [...currentCoins]);
+                        play('push');
+                        await delay(800 / speed);
+                    }
+                    if (remaining === 0) break;
+                }
+                play('bloom');
+            } catch(e) {}
+        };
+        runCoinChange();
+        break;
+      case 'sortReset': {
+        // If user typed a comma-separated list, use it; else default
+        const rInput = value && value.trim();
+        const rArr = rInput
+          ? rInput.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n))
+          : [8, 3, 5, 4, 7, 1, 2, 6];
+        const finalRArr = rArr.length >= 2 ? rArr : [8, 3, 5, 4, 7, 1, 2, 6];
+        sortSetArray(finalRArr);
+        sortSetHighlights([]);
+        break;
+      }
+      case 'sortBubble': {
+        // Parse user input array or use current
+        const bInput = value && value.trim();
+        const bUserArr = bInput
+          ? bInput.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n))
+          : null;
+        if (bUserArr && bUserArr.length >= 2) sortSetArray(bUserArr);
+        const bubbleSpeed = 1000 / speed;
+        const bubbleSort = async () => {
+           try {
+               let arr = bUserArr && bUserArr.length >= 2 ? [...bUserArr] : [...sortArray];
+               for (let i = 0; i < arr.length; i++) {
+                  for (let j = 0; j < arr.length - i - 1; j++) {
+                     sortSetHighlights([j, j+1]);
+                     await delay(bubbleSpeed * 0.3);
+                     if (arr[j] > arr[j+1]) {
+                         play('pop');
+                         let temp = arr[j];
+                         arr[j] = arr[j+1];
+                         arr[j+1] = temp;
+                         sortSetArray([...arr]);
+                         await delay(bubbleSpeed * 0.5);
+                     }
+                  }
+               }
+               sortSetHighlights([]);
+               play('bloom');
+           } catch(e) {}
+        }
+        bubbleSort()
+        break;
+      }
+      case 'sortQuick':
+        const qSpeed = 1000 / speed;
+        const quick = async (arr, low, high) => {
+            if (low < high) {
+                let p = await partition(arr, low, high);
+                await quick(arr, low, p - 1);
+                await quick(arr, p + 1, high);
+            }
+        };
+        const partition = async (arr, low, high) => {
+            let pivot = arr[high];
+            let i = low - 1;
+            for (let j = low; j < high; j++) {
+                sortSetHighlights([j, high, i]);
+                await delay(qSpeed * 0.3);
+                if (arr[j] < pivot) {
+                    i++;
+                    play('pop');
+                    let temp = arr[i];
+                    arr[i] = arr[j];
+                    arr[j] = temp;
+                    sortSetArray([...arr]);
+                    await delay(qSpeed * 0.5);
+                }
+            }
+            let temp2 = arr[i + 1];
+            arr[i + 1] = arr[high];
+            arr[high] = temp2;
+            sortSetArray([...arr]);
+            play('push');
+            await delay(qSpeed * 0.5);
+            return i + 1;
+        };
+        const runQuick = async () => {
+            try {
+                let arr = [...sortArray];
+                await quick(arr, 0, arr.length - 1);
+                sortSetHighlights([]);
+                play('bloom');
+            } catch (e) {}
+        }
+        runQuick();
+        break;
+      case 'recReset':
+        recursionSetFrames([]);
+        break;
+      case 'recRun':
+        const startVal = parseInt(value) || 5; 
+        const n = Math.min(startVal, 10); // Limit deep recursion
+        
+        const runFactorial = async () => {
+            try {
+                let frames = [];
+                const rSpeed = 1000 / speed;
+                
+                // Dive Phase
+                for (let i = n; i >= 1; i--) {
+                    frames.push({ arg: i, phase: 'calling' });
+                    recursionSetFrames([...frames]);
+                    play('push');
+                    await delay(rSpeed * 0.6);
+                }
+                
+                // Base Case
+                frames[frames.length - 1].phase = 'base';
+                recursionSetFrames([...frames]);
+                play('bloom');
+                await delay(rSpeed);
+                
+                // Returning Phase
+                let result = 1;
+                for (let i = frames.length - 1; i >= 0; i--) {
+                   result = result * frames[i].arg;
+                   frames[i].phase = 'returning';
+                   frames[i].result = result;
+                   recursionSetFrames([...frames]);
+                   play('pop');
+                   await delay(rSpeed * 0.7);
+                   if (i > 0) {
+                      frames.pop();
+                      recursionSetFrames([...frames]);
+                   }
+                }
+            } catch(e) {}
+        }
+        runFactorial();
         break;
       default: break;
     }
   }
 
-  const activeLine = useAppStore(s => s.activeLine)
-
   return (
     <>
       <CustomCursor />
-      
-      {/* 600vh div to give Lenis something to actually scroll */}
-      <div className="scroll-track" />
+      <TabNavigation />
 
       {/* R3F Canvas Container */}
       <div className="canvas-container interactive-canvas">
@@ -137,28 +502,23 @@ export default function App() {
           <color attach="background" args={['#0a0a0f']} />
           <ambientLight intensity={0.5} />
           
+          <AmbientParticles count={800} />
+          
           <Suspense fallback={null}>
             <SceneManager sceneIndex={currentScene} />
             <Preload all />
           </Suspense>
 
-          <CameraRig velocity={velocity} />
-          <PostProcessing velocity={velocity} />
+          <CameraRig />
+          <PostProcessing />
         </Canvas>
       </div>
 
       {/* UI Overlays */}
-      <ControlPanel onOperation={handleOperation} />
-      <CodePanel activeOp={lastOp?.type} activeLine={activeLine} />
-
-      {/* Progress Bar mapped to overall scroll progress */}
-      <div 
-        style={{
-          position: 'fixed', right: 0, top: 0, height: `${progress * 100}%`,
-          width: '3px', background: '#00ffe0', boxShadow: '0 0 10px #00ffe0',
-          zIndex: 100
-        }} 
-      />
+      {currentScene === 0 && <LandingOverlay />}
+      {currentScene !== 0 && <IntroOverlay />}
+      {currentScene !== 0 && hasSeenIntro && <ControlPanel onOperation={handleOperation} />}
+      {currentScene !== 0 && hasSeenIntro && <CodePanel activeOp={lastOp?.type} activeLine={activeLine} />}
     </>
   )
 }

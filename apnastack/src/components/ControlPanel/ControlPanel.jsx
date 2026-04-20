@@ -27,9 +27,48 @@ const SCENE_OPS = {
     { id: 'addEdge', label: 'ADD EDGE', icon: '🕸' },
     { id: 'bfs',     label: 'BFS',      icon: '🔵' },
   ],
+  6: [
+    { id: 'dpRun',   label: 'RUN DP',   icon: '🌊' },
+    { id: 'dpReset', label: 'RESET',    icon: '✕' },
+  ],
+  7: [
+    { id: 'btRun',   label: 'FIND PATH', icon: '🍄' },
+    { id: 'btReset', label: 'GEN MAZE',  icon: '🎲' },
+  ],
+  8: [
+    { id: 'dcRun',   label: 'SPLIT',     icon: '🧬' },
+    { id: 'dcReset', label: 'RESET',     icon: '✕' },
+  ],
+  9: [
+    { id: 'greedyRun', label: 'CLIMB',   icon: '⛰️' },
+    { id: 'greedyReset', label: 'RESET', icon: '✕' },
+  ],
+  10: [
+    { id: 'sortBubble', label: 'BUBBLE', icon: '🫧' },
+    { id: 'sortQuick',  label: 'QUICK',  icon: '⚡' },
+    { id: 'sortReset',  label: 'RESET',  icon: '✕' },
+  ],
+  11: [
+    { id: 'recRun',   label: 'RECURSE',  icon: '🌀' },
+    { id: 'recReset', label: 'RESET',    icon: '✕' },
+  ]
 }
 
-const SCENE_NAMES = ['LANDING', 'STACK', 'QUEUE', 'LINKED LIST', 'TREE', 'GRAPH']
+const SCENE_PLACEHOLDERS = {
+  1: 'value to push (e.g. 42)',
+  2: 'value to enqueue (e.g. 99)',
+  3: 'value to insert (e.g. 7)',
+  4: 'value to insert (e.g. 15)',
+  5: 'node label OR src-tgt (e.g. A-B)',
+  6: 'grid size (e.g. 4)',
+  7: 'board size N (e.g. 4, 6, 8)',
+  8: 'comma-separated array (e.g. 8,3,5,1)',
+  9: 'target amount (e.g. 87)',
+  10: 'comma-separated array (e.g. 5,2,8,1,9)',
+  11: 'start depth (e.g. 6)',
+}
+
+const SCENE_NAMES = ['LANDING', 'STACK', 'QUEUE', 'LINKED LIST', 'TREE', 'GRAPH', 'DP', 'BACKTRACKING', 'DIVIDE & CONQUER', 'GREEDY', 'SORTING', 'RECURSION']
 
 export default function ControlPanel({ onOperation }) {
   const currentScene  = useAppStore((s) => s.currentScene)
@@ -41,6 +80,7 @@ export default function ControlPanel({ onOperation }) {
 
   const ops = SCENE_OPS[currentScene] || []
   if (!ops.length) return null
+  const placeholder = SCENE_PLACEHOLDERS[currentScene] || 'value…'
 
   return (
     <motion.div
@@ -60,7 +100,7 @@ export default function ControlPanel({ onOperation }) {
       <input
         id="ds-value-input"
         className="panel-input"
-        placeholder="value…"
+        placeholder={placeholder}
         value={input}
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={(e) => { if (e.key === 'Enter' && ops[0]) onOperation(ops[0].id, input) }}

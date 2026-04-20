@@ -53,6 +53,82 @@ const PSEUDOCODE = {
     '  for child in node.children:',
     '    DFS(child)',
   ],
+  addNode: [
+    'function addNode(graph, val):',
+    '  node ← new Node(val)',
+    '  graph.nodes.append(node)',
+  ],
+  addEdge: [
+    'function addEdge(u, v):',
+    '  u.edges.append(v)',
+    '  v.edges.append(u) // if undirected',
+  ],
+  greedyRun: [
+     'function coin_change(target):',
+     '  for coin in [25, 10, 5, 1]:',
+     '    while target >= coin:',
+     '      target -= coin',
+     '      coins.push(coin)',
+     '  return coins'
+  ],
+  recRun: [
+     'function factorial(n):',
+     '  if n <= 1: return 1',
+     '  return n * factorial(n - 1)'
+  ],
+  btRun: [
+     'function NQueens(row):',
+     '  if row == N: return True',
+     '  for col in 0 to N-1:',
+     '    if isSafe(row, col):',
+     '      place_queen()',
+     '      if NQueens(row + 1): return True',
+     '      remove_queen()',
+     '  return False'
+  ],
+  dpRun: [
+     'function GridTraveler(grid):',
+     '  dp[0][0] = 1',
+     '  for r in rows:',
+     '    for c in cols:',
+     '      if r > 0 or c > 0:',
+     '         dp[r][c] = dp[r-1][c] + dp[r][c-1]',
+  ],
+  dcRun: [
+    'function split(Array):',
+    '  mid ← len(Array) / 2',
+    '  left ← Array[0...mid]',
+    '  right ← Array[mid...end]',
+    '  return left, right',
+  ],
+  greedyRun: [
+    'function climb(pos):',
+    '  loop 15 times:',
+    '    next ← argmax(height(neighbor))',
+    '    if height(next) > height(pos):',
+    '      pos ← next',
+    '    else break',
+  ],
+  sortBubble: [
+    'function bubbleSort(A):',
+    '  for i from 1 to len(A):',
+    '    for j from 0 to len(A)-i-1:',
+    '      if A[j] > A[j+1]:',
+    '        swap(A[j], A[j+1])',
+  ],
+  sortQuick: [
+    'function quickSort(A, low, high):',
+    '  if low < high:',
+    '    p ← partition(A, low, high)',
+    '    quickSort(A, low, p-1)',
+    '    quickSort(A, p+1, high)',
+  ],
+  recRun: [
+    'function recurse(depth):',
+    '  if depth == MAX:',
+    '    return BASE_CASE',
+    '  return recurse(depth+1)',
+  ],
 }
 
 const BIG_O = {
@@ -64,6 +140,14 @@ const BIG_O = {
   delete:  { time: 'O(n)', space: 'O(1)' },
   bfs:     { time: 'O(V+E)', space: 'O(V)' },
   dfs:     { time: 'O(V+E)', space: 'O(V)' },
+  addNode:   { time: 'O(1)', space: 'O(1)' },
+  addEdge:   { time: 'O(1)', space: 'O(1)' },
+  dpRun:     { time: 'O(n)', space: 'O(n)' },
+  dcRun:     { time: 'O(1)', space: 'O(n)' },
+  greedyRun: { time: 'O(k)', space: 'O(1)' },
+  sortBubble:{ time: 'O(n²)', space: 'O(1)' },
+  sortQuick: { time: 'O(n log n)', space: 'O(log n)' },
+  recRun:    { time: 'O(n)', space: 'O(n)' },
 }
 
 export default function CodePanel({ activeOp, activeLine }) {

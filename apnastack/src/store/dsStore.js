@@ -3,7 +3,9 @@ import { create } from 'zustand'
 export const useAppStore = create((set, get) => ({
   // ── Scene Management ──────────────────────────────────────────────────────
   currentScene: 0,   // 0=Landing, 1=Stack, 2=Queue, 3=LinkedList, 4=Tree, 5=Graph
-  setScene: (idx) => set({ currentScene: idx }),
+  hasSeenIntro: false,
+  setScene: (idx) => set({ currentScene: idx, hasSeenIntro: false }),
+  setSeenIntro: (val) => set({ hasSeenIntro: val }),
 
   // ── Audio ──────────────────────────────────────────────────────────────────
   audioEnabled: false,
@@ -87,6 +89,50 @@ export const useAppStore = create((set, get) => ({
   })),
   graphHighlights: [],
   setGraphHighlights: (ids) => set({ graphHighlights: ids }),
+
+  // ── Dynamic Programming DS (Grid Traveler) ────────────────────────────────
+  dpMatrix: [], // 2D array: [rows][cols]
+  dpHighlights: [], // [{r, c}, ...] relative highlights
+  dpSetMatrix: (matrix) => set({ dpMatrix: matrix }),
+  dpFillCell: (r, c, val) => set(s => {
+      const g = s.dpMatrix.map(row => [...row]);
+      g[r][c] = val;
+      return { dpMatrix: g };
+  }),
+  dpSetHighlights: (cells) => set({ dpHighlights: cells }),
+
+  // ── Backtracking DS (N-Queens) ────────────────────────────────────────────
+  btBoardSize: 4,
+  btBoard: [], // Array of col indices per row. -1 means no queen.
+  btActiveCell: null, // { r, c, status: 'checking' | 'clash' | 'placed' }
+  btSetState: (n, board, cell) => set({ btBoardSize: n, btBoard: board, btActiveCell: cell }),
+
+  // ── Divide & Conquer DS ───────────────────────────────────────────────────
+  dcBoxes: [], 
+  dcSetBoxes: (boxes) => set({ dcBoxes: boxes }),
+  dcSplit: (id, newBoxes) => set(s => ({
+    dcBoxes: [...s.dcBoxes.filter(b => b.id !== id), ...newBoxes]
+  })),
+
+  // ── Greedy DS ─────────────────────────────────────────────────────────────
+  greedyTarget: 0,
+  greedyCoinsUsed: [],
+  greedySetState: (target, coins) => set({ greedyTarget: target, greedyCoinsUsed: coins }),
+
+  // ── Sorting DS ────────────────────────────────────────────────────────────
+  sortArray: [8, 3, 5, 4, 7, 1, 2, 6], // Array of numbers
+  sortSetArray: (arr) => set({ sortArray: arr }),
+  sortSwap: (idx1, idx2) => set(s => {
+      const arr = [...s.sortArray];
+      [arr[idx1], arr[idx2]] = [arr[idx2], arr[idx1]];
+      return { sortArray: arr };
+  }),
+  sortHighlights: [], // indices being compared/swapped
+  sortSetHighlights: (indices) => set({ sortHighlights: indices }),
+
+  // ── Recursion DS ──────────────────────────────────────────────────────────
+  recursionFrames: [], 
+  recursionSetFrames: (frames) => set({ recursionFrames: frames }),
 
   // ── Operation Log ─────────────────────────────────────────────────────────
   lastOp: null,   // { type, value, timestamp }

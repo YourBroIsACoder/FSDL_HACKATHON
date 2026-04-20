@@ -49,32 +49,6 @@ export default function LandingScene() {
       
       {/* 3D Liquid Hero Blob */}
       <HeroBlob />
-
-      {/* Hero Text */}
-      <Html position={[0, -2, 0]} center zIndexRange={[100, 0]} className="pointer-events-none">
-        <div style={{ textAlign: 'center' }}>
-          <h1 style={{ 
-            fontFamily: 'Syne', 
-            fontSize: '8vw', 
-            fontWeight: 800, 
-            color: '#fff', 
-            margin: 0, 
-            letterSpacing: '0.1em',
-            textShadow: '0 0 40px rgba(0,255,224,0.5)' 
-          }}>
-            APNASTACK
-          </h1>
-          <p style={{ 
-            fontFamily: 'JetBrains Mono', 
-            color: PALETTE.plasmaTeal, 
-            fontSize: '1vw',
-            letterSpacing: '0.3em',
-            marginTop: '10px'
-          }}>
-            SCROLL TO SHATTER THE REALITY OF DATA STRUCTURES
-          </p>
-        </div>
-      </Html>
     </group>
   )
 }

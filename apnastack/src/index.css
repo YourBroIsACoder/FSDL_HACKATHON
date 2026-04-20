@@ -9,6 +9,8 @@
   --molten-orange: #ff6b35;
   --deep-violet: #7c3aed;
   --ghost-white: #f0fffe;
+  /* Height of ControlPanel + bottom gap */
+  --panel-safe-inset: 210px;
 }
 
 body {
@@ -17,14 +19,7 @@ body {
   background-color: var(--void-black);
   color: var(--ghost-white);
   font-family: 'Syne', sans-serif;
-  overflow-x: hidden;
-  /* hide scrollbar for smooth Lenis */
-  -ms-overflow-style: none;  
-  scrollbar-width: none; 
-}
-
-body::-webkit-scrollbar {
-  display: none;
+  overflow: hidden; /* Fully static app feel */
 }
 
 /* ── Fullscreen Layout ───────────────────────────────────────────────────── */
@@ -40,31 +35,18 @@ body::-webkit-scrollbar {
   width: 100vw;
   height: 100vh;
   z-index: 10;
-  pointer-events: none; /* Let UI sit on top, click to canvas via specific raycasts if needed */
+  pointer-events: none;
 }
 
-/* Three.js raycasting container to grab pointer events */
 .interactive-canvas {
   pointer-events: auto !important;
 }
 
-/* ── Lenis Scroll Spacer ─────────────────────────────────────────────────── */
-.scroll-track {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%;
-  /* 6 scenes = 600vh scroll height */
-  height: 600vh;
-  z-index: 1; 
-  pointer-events: none;
+/* ── Global: prevent R3F Html pop-overs from bleeding into ControlPanel ─── */
+/* The ControlPanel sits in the bottom ~210px. Push the drei Html portal       */
+/* container up so it only occupies the safe zone.                             */
+.canvas-container canvas {
+  /* The actual WebGL surface: full height as before */
+  display: block;
 }
 
-.lenis.lenis-smooth {
-  scroll-behavior: auto;
-}
-.lenis.lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
-}
-.lenis.lenis-stopped {
-  overflow: hidden;
-}

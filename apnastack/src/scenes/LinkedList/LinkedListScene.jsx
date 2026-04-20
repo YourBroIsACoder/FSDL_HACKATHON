@@ -62,21 +62,39 @@ function LLNode({ data, pos, isLast }) {
     <group position={pos}>
       {/* The Gravity Singularity */}
       <mesh ref={meshRef}>
-        <sphereGeometry args={[0.6, 32, 32]} />
-        <meshBasicMaterial color="#000" />
+        <sphereGeometry args={[0.5, 32, 32]} />
+        <meshPhysicalMaterial 
+           color="#0a0a0f" 
+           metalness={0.9} 
+           roughness={0.1} 
+           clearcoat={1.0}
+           clearcoatRoughness={0.1}
+        />
       </mesh>
       
-      {/* Accretion Disk */}
+      {/* Accretion Disk / Energy Ring */}
       <mesh rotation={[Math.PI/2, 0, 0]}>
         <torusGeometry args={[1.2, 0.05, 16, 64]} />
-        <meshBasicMaterial color={PALETTE.plasmaTeal} transparent opacity={0.6} />
+        <meshStandardMaterial 
+           color={PALETTE.plasmaTeal} 
+           emissive={PALETTE.plasmaTeal}
+           emissiveIntensity={1.5}
+           transparent 
+           opacity={0.8} 
+        />
       </mesh>
 
       {/* Connection arrow to next */}
       {!isLast && (
         <mesh position={[2.5, 0, 0]}>
-          <boxGeometry args={[3, 0.1, 0.1]} />
-          <meshBasicMaterial color={PALETTE.ghostWhite} transparent opacity={0.3} />
+          <boxGeometry args={[3, 0.05, 0.05]} />
+          <meshStandardMaterial 
+             color={PALETTE.ghostWhite} 
+             emissive={PALETTE.ghostWhite}
+             emissiveIntensity={0.5}
+             transparent 
+             opacity={0.5} 
+          />
         </mesh>
       )}
 
@@ -93,7 +111,9 @@ export default function LinkedListScene() {
   const ll = useAppStore(s => s.linkedList)
 
   // Calculate layout natively
-  const positions = ll.map((n, i) => new THREE.Vector3((i - ll.length / 2) * 5 + 2.5, -2.5, 0))
+  const positions = useMemo(() => 
+    ll.map((n, i) => new THREE.Vector3((i - ll.length / 2) * 5 + 2.5, -2.5, 0)),
+  [ll])
 
   return (
     <group>

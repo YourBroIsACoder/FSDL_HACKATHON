@@ -12,6 +12,15 @@
   z-index: 200;
   box-shadow: 0 0 40px #00ffe011, 0 8px 32px #0005;
   cursor: grab;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+.code-panel::-webkit-scrollbar {
+  width: 4px;
+}
+.code-panel::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 224, 0.3);
+  border-radius: 4px;
 }
 .code-panel:active { cursor: grabbing; }
 

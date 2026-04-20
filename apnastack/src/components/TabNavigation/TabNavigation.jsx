@@ -1,0 +1,40 @@
+import React from 'react';
+import { useAppStore } from '../../store/dsStore';
+import './TabNavigation.css';
+
+const TABS = [
+  { id: 0, label: 'VOID' },
+  { id: 1, label: 'STACK' },
+  { id: 2, label: 'QUEUE' },
+  { id: 3, label: 'LLIST' },
+  { id: 4, label: 'TREE' },
+  { id: 5, label: 'GRAPH' },
+  { id: 6, label: 'DP' },
+  { id: 7, label: 'BACKTRACKING' },
+  { id: 8, label: 'DIV&CONQ' },
+  { id: 9, label: 'GREEDY' },
+  { id: 10, label: 'SORTING' },
+  { id: 11, label: 'RECURSION' },
+];
+
+export default function TabNavigation() {
+  const currentScene = useAppStore((s) => s.currentScene);
+  const setScene = useAppStore((s) => s.setScene);
+
+  return (
+    <nav className="tab-navigation">
+      <div className="tab-container">
+        {TABS.map((tab) => (
+          <button
+            key={tab.id}
+            className={`tab-button ${currentScene === tab.id ? 'active' : ''}`}
+            onClick={() => setScene(tab.id)}
+          >
+            <span className="tab-label">{tab.label}</span>
+            {currentScene === tab.id && <div className="tab-indicator" />}
+          </button>
+        ))}
+      </div>
+    </nav>
+  );
+}

@@ -56,7 +56,7 @@ function DCBox({ boxData }) {
         
         <Html position={[0, 0, 0.6]} center className="pointer-events-none">
           <div style={{ 
-            color: '#fff', 
+            color: 'var(--text)', 
             fontFamily: 'JetBrains Mono', 
             fontSize: '16px', 
             fontWeight: 'bold',

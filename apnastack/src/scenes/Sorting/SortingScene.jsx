@@ -28,7 +28,7 @@ function SortRod({ value, index, total, isHighlighted }) {
   })
 
   return (
-    <group position={[targetX, 0, 0]}> {/* We let the group handle X smoothly via the ref below if needed, but we do it on mesh for simplicity */}
+    <group position={[targetX, 0, 0]}>
       <mesh ref={meshRef} position={[0, targetY/2, 0]}>
          <cylinderGeometry args={[0.5, 0.5, targetY, 32]} />
          <meshStandardMaterial 
@@ -41,7 +41,7 @@ function SortRod({ value, index, total, isHighlighted }) {
          />
          <Html position={[0, targetY/2 + 0.5, 0]} center className="pointer-events-none">
             <div style={{
-                color: '#fff',
+                color: 'var(--text)',
                 fontFamily: 'JetBrains Mono',
                 fontSize: '20px',
                 fontWeight: 'bold',
@@ -56,24 +56,39 @@ function SortRod({ value, index, total, isHighlighted }) {
 }
 
 export default function SortingScene() {
-   const sortArray = useAppStore(s => s.sortArray)
-   const sortHighlights = useAppStore(s => s.sortHighlights)
+    const sortArray = useAppStore(s => s.sortArray)
+    const sortHighlights = useAppStore(s => s.sortHighlights)
+    const sortStats = useAppStore(s => s.sortStats)
 
-   return (
-       <group position={[0, -2, 0]}>
-          <ambientLight intensity={0.5} />
-          <directionalLight position={[0, 10, 5]} intensity={1.5} />
-          <pointLight position={[0, -1, 4]} intensity={2} color={PALETTE.plasmaTeal} />
+    return (
+        <group position={[0, -2, 0]}>
+           <ambientLight intensity={0.4} />
+           <directionalLight position={[10, 10, 5]} intensity={2} color="#fff" />
+           <pointLight position={[-10, 5, 5]} intensity={2.5} color={PALETTE.moltenOrange} />
+           <pointLight position={[0, -5, 2]} intensity={2} color={PALETTE.plasmaTeal} />
 
-          {sortArray.map((val, idx) => (
-              <SortRod 
-                 key={`rod-${val}`} 
-                 value={val}
-                 index={idx}
-                 total={sortArray.length}
-                 isHighlighted={sortHighlights.includes(idx)}
-              />
-          ))}
-       </group>
-   )
+           <Html position={[0, 8, -5]} center>
+              <div className="sorting-dashboard">
+                <div className="stat-card">
+                  <div className="stat-label">COMPARISONS</div>
+                  <div className="stat-value">{sortStats.comparisons}</div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-label">SWAPS</div>
+                  <div className="stat-value">{sortStats.swaps}</div>
+                </div>
+              </div>
+           </Html>
+
+           {sortArray.map((val, idx) => (
+               <SortRod 
+                  key={`rod-${val}`} 
+                  value={val}
+                  index={idx}
+                  total={sortArray.length}
+                  isHighlighted={sortHighlights.includes(idx)}
+               />
+           ))}
+        </group>
+    )
 }

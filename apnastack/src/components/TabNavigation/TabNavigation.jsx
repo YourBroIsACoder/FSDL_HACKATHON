@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { useAppStore } from '../../store/dsStore';
 import './TabNavigation.css';
 
@@ -20,6 +21,8 @@ const TABS = [
 export default function TabNavigation() {
   const currentScene = useAppStore((s) => s.currentScene);
   const setScene = useAppStore((s) => s.setScene);
+  const toggleSandbox = useAppStore((s) => s.toggleSandbox);
+  const sandboxVisible = useAppStore((s) => s.sandboxVisible);
 
   return (
     <nav className="tab-navigation">
@@ -34,6 +37,19 @@ export default function TabNavigation() {
             {currentScene === tab.id && <div className="tab-indicator" />}
           </button>
         ))}
+        
+        <div className="tab-divider" style={{ width: '1px', height: '20px', background: 'var(--border)', margin: '0 12px', opacity: 0.5 }} />
+
+        <button
+          className={`tab-button ${sandboxVisible ? 'active' : ''}`}
+          onClick={toggleSandbox}
+          style={{ 
+            color: sandboxVisible ? 'var(--accent)' : 'var(--text-dim)',
+            borderColor: sandboxVisible ? 'var(--accent)' : 'transparent',
+          }}
+        >
+          <span className="tab-label">💻 SANDBOX</span>
+        </button>
       </div>
     </nav>
   );

@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useRef } from 'react'
+import { Suspense, useEffect, useRef, useState } from 'react'
 import { Canvas, useThree } from '@react-three/fiber'
 import { Preload } from '@react-three/drei'
 import { EffectComposer, Bloom, ChromaticAberration, DepthOfField } from '@react-three/postprocessing'
@@ -7,10 +7,17 @@ import CustomCursor from './components/CustomCursor/CustomCursor'
 import ControlPanel from './components/ControlPanel/ControlPanel'
 import CodePanel from './components/CodePanel/CodePanel'
 import TabNavigation from './components/TabNavigation/TabNavigation'
+import TheoryPanel from './components/TheoryPanel/TheoryPanel'
+import HelpGuide from './components/HelpGuide/HelpGuide'
 import SceneManager from './components/SceneManager'
 import LandingOverlay from './components/LandingOverlay'
 import IntroOverlay from './components/IntroOverlay'
 import AmbientParticles from './components/AmbientParticles'
+import ThemeToggle from './components/ThemeToggle/ThemeToggle'
+import InfixPanel from './components/InfixPanel/InfixPanel'
+import ParenthesesPanel from './components/ParenthesesPanel/ParenthesesPanel'
+import QuizPanel from './components/QuizPanel/QuizPanel'
+import CodeSandboxPanel from './components/CodeSandboxPanel/CodeSandboxPanel'
 
 import { useAppStore } from './store/dsStore'
 import { useAudio } from './hooks/useAudio'
@@ -42,9 +49,11 @@ function PostProcessing() {
 export default function App() {
   // Audio synths
   const { play } = useAudio()
+  const [showInfix, setShowInfix] = useState(false)
 
   // Zustand State
   const currentScene = useAppStore(s => s.currentScene)
+  const theme = useAppStore(s => s.theme)
   const hasSeenIntro = useAppStore(s => s.hasSeenIntro)
   const lastOp = useAppStore(s => s.lastOp)
   const logOp = useAppStore(s => s.logOp)
@@ -56,11 +65,15 @@ export default function App() {
   const queueDequeue = useAppStore(s => s.queueDequeue)
   const llInsert = useAppStore(s => s.llInsert)
   const llDelete = useAppStore(s => s.llDelete)
+  const llReverse = useAppStore(s => s.llReverse)
+  const llSetHighlight = useAppStore(s => s.llSetHighlight)
   const treeInsert = useAppStore(s => s.treeInsert)
   const linkedList = useAppStore(s => s.linkedList)
+  const tree = useAppStore(s => s.tree)
   const graphAddNode = useAppStore(s => s.graphAddNode)
   const graphAddEdge = useAppStore(s => s.graphAddEdge)
   const graphNodes = useAppStore(s => s.graphNodes)
+  const queue = useAppStore(s => s.queue)
 
   const dpFillCell = useAppStore(s => s.dpFillCell)
   const dpSetHighlights = useAppStore(s => s.dpSetHighlights)
@@ -79,9 +92,19 @@ export default function App() {
   const sortSetArray = useAppStore(s => s.sortSetArray)
   const sortSetHighlights = useAppStore(s => s.sortSetHighlights)
 
+  const sortIncComparisons = useAppStore(s => s.sortIncComparisons)
+  const sortIncSwaps       = useAppStore(s => s.sortIncSwaps)
+  const sortResetStats     = useAppStore(s => s.sortResetStats)
+  const openQuiz      = useAppStore(s => s.openQuiz)
   const speed = useAppStore(s => s.speed)
   const setActiveLine = useAppStore(s => s.setActiveLine)
   const activeLine = useAppStore(s => s.activeLine)
+
+  const setTraversalOrder = useAppStore(s => s.setTraversalOrder)
+  const setTraversalHighlights = useAppStore(s => s.setTraversalHighlights)
+
+  const showParentheses = useAppStore(s => s.showParentheses)
+  const toggleParentheses = useAppStore(s => s.toggleParentheses)
 
   // Animation Concurrency Lock
   const activeAnimId = useRef(0)
@@ -96,7 +119,23 @@ export default function App() {
     const animId = Date.now()
     activeAnimId.current = animId
     const checkCancel = () => { if (activeAnimId.current !== animId) throw new Error('CANCELLED') }
-    const delay = async (ms) => { await new Promise(r => setTimeout(r, ms)); checkCancel() }
+    const delay = async (ms) => { 
+      const state = useAppStore.getState();
+      if (state.isStepMode) {
+        const currentTrigger = state.stepTrigger;
+        await new Promise(resolve => {
+          const unsub = useAppStore.subscribe(s => {
+            if (s.stepTrigger !== currentTrigger || !s.isStepMode) {
+              unsub();
+              resolve();
+            }
+          });
+        });
+      } else {
+        await new Promise(r => setTimeout(r, ms)); 
+      }
+      checkCancel();
+    }
 
     // Code Line Sequencer
     const sequenceLines = async (count) => {
@@ -119,13 +158,16 @@ export default function App() {
 
     const isHeavyAlgo = ['greedyRun', 'recRun', 'btRun', 'dpRun'].includes(opId);
     if (isHeavyAlgo) {
-        sequenceLines(lines); // run concurrently
+        await sequenceLines(lines); // wait for heavy ones now to trigger quiz after
+        openQuiz();
     } else {
         await sequenceLines(lines);
     }
 
     // Map UI actions to Zustand store mutations
     switch (opId) {
+      case 'infixDemo': setShowInfix(v => !v); break;
+      case 'balancedParens': toggleParentheses(); break;
       case 'push': stackPush(valObj); break;
       case 'pop': stackPop(); break;
       case 'enqueue': queueEnqueue(valObj); break;
@@ -159,14 +201,147 @@ export default function App() {
         }
         break;
       case 'insert': 
-        if (currentScene === 3) llInsert(valObj, linkedList.length);
+        if (currentScene === 3) {
+            let parts = value.split(',').map(s => s.trim());
+            let v = parts[0] || Math.floor(Math.random() * 100).toString();
+            let idx = parts.length > 1 ? parseInt(parts[1]) : linkedList.length;
+            const finalIdx = isNaN(idx) ? linkedList.length : idx;
+            
+            const runLLInsert = async () => {
+                try {
+                    // Traverse to index
+                    const traverseLimit = Math.min(finalIdx, linkedList.length);
+                    for(let i = 0; i < traverseLimit; i++) {
+                        llSetHighlight(linkedList[i].id);
+                        await delay(600 / speed);
+                    }
+                    llInsert(v, finalIdx);
+                    llSetHighlight(null);
+                } catch(e) {}
+            };
+            runLLInsert();
+        }
         if (currentScene === 4) treeInsert(valObj);
         break;
       case 'delete':
-        if (currentScene === 3 && linkedList.length > 0) llDelete(linkedList[linkedList.length - 1].id);
+        if (currentScene === 3 && linkedList.length > 0) {
+            const inputVal = value.trim();
+            let idx = -1;
+            if (inputVal !== '') {
+                const parsedIdx = parseInt(inputVal);
+                if (!isNaN(parsedIdx) && parsedIdx >= 0 && parsedIdx < linkedList.length) idx = parsedIdx;
+                else idx = linkedList.findIndex(n => n.val.toString() === inputVal);
+            }
+            if (idx === -1) idx = linkedList.length - 1;
+
+            const runLLDelete = async () => {
+                try {
+                    // Traverse animation
+                    for(let i = 0; i <= idx; i++) {
+                        llSetHighlight(linkedList[i].id);
+                        await delay(600 / speed);
+                    }
+                    llDelete(linkedList[idx].id);
+                    llSetHighlight(null);
+                    openQuiz();
+                } catch(e) {}
+            };
+            runLLDelete();
+        }
+        break;
+      case 'reverse':
+        if (currentScene === 3) {
+            const runLLReverse = async () => {
+                try {
+                    // Visual step-by-step reverse
+                    for(let i = 0; i < linkedList.length; i++) {
+                        llSetHighlight(linkedList[i].id);
+                        await delay(500 / speed);
+                    }
+                    llReverse();
+                    llSetHighlight(null);
+                    openQuiz();
+                } catch(e) {}
+            };
+            runLLReverse();
+        }
+        break;
+      case 'scheduler':
+        if (currentScene === 2) {
+            const runScheduler = async () => {
+                try {
+                    const tasks = ['P1 (4s)', 'P2 (2s)', 'P3 (6s)'];
+                    for (const t of tasks) {
+                        queueEnqueue(t);
+                        await delay(800 / speed);
+                    }
+                    
+                    // Process one by one (simplified)
+                    for (let i = 0; i < 5; i++) {
+                        if (queue.length === 0) break;
+                        play('pop');
+                        const active = queueDequeue();
+                        await delay(1200 / speed);
+                        // If it's a long task, put it back
+                        if (active.includes('P1') || active.includes('P3')) {
+                            queueEnqueue(active.replace(/\d+s/, (m) => (parseInt(m)-2)+'s'));
+                            await delay(800 / speed);
+                        }
+                    }
+                    openQuiz();
+                } catch(e) {}
+            };
+            runScheduler();
+        }
         break;
       case 'bfs':
         play('bloom')
+        break;
+      case 'inorder':
+      case 'preorder':
+      case 'postorder':
+        if (currentScene === 4 && tree) {
+            const runTraversal = async () => {
+                try {
+                    const order = [];
+                    setTraversalOrder([]);
+                    
+                    const traverse = async (node) => {
+                        if (!node) return;
+                        
+                        if (opId === 'preorder') {
+                            order.push(node.val);
+                            setTraversalOrder([...order]);
+                            setTraversalHighlights([node.id]);
+                            await delay(800 / speed);
+                        }
+                        
+                        await traverse(node.left);
+                        
+                        if (opId === 'inorder') {
+                            order.push(node.val);
+                            setTraversalOrder([...order]);
+                            setTraversalHighlights([node.id]);
+                            await delay(800 / speed);
+                        }
+                        
+                        await traverse(node.right);
+                        
+                        if (opId === 'postorder') {
+                            order.push(node.val);
+                            setTraversalOrder([...order]);
+                            setTraversalHighlights([node.id]);
+                            await delay(800 / speed);
+                        }
+                    };
+                    
+                    await traverse(tree);
+                    setTraversalHighlights([]);
+                    openQuiz();
+                } catch(e) {}
+            };
+            runTraversal();
+        }
         break;
       case 'dpRun':
         const gridSize = parseInt(value) || 4; 
@@ -223,18 +398,18 @@ export default function App() {
                 const isSafe = async (row, col) => {
                     btSetState(N, [...board], { r: row, c: col, status: 'checking' });
                     play('push');
-                    await delay(btSpeedScale * 0.4);
+                    await delay(btSpeedScale * 0.2);
                     
                     for (let i = 0; i < row; i++) {
                         if (board[i] === col || Math.abs(board[i] - col) === Math.abs(i - row)) {
                             btSetState(N, [...board], { r: row, c: col, status: 'clash' });
                             play('pop');
-                            await delay(btSpeedScale * 0.6);
+                            await delay(btSpeedScale * 0.3);
                             return false;
                         }
                     }
                     btSetState(N, [...board], { r: row, c: col, status: 'placed' });
-                    await delay(btSpeedScale * 0.2);
+                    await delay(btSpeedScale * 0.15);
                     return true;
                 };
                 
@@ -249,7 +424,7 @@ export default function App() {
                             // backtrack
                             btSetState(N, [...board], { r: row, c: col, status: 'clash' });
                             play('pop');
-                            await delay(btSpeedScale * 0.4);
+                            await delay(btSpeedScale * 0.3);
                             board[row] = -1;
                             btSetState(N, [...board], null);
                         }
@@ -366,6 +541,7 @@ export default function App() {
         const finalRArr = rArr.length >= 2 ? rArr : [8, 3, 5, 4, 7, 1, 2, 6];
         sortSetArray(finalRArr);
         sortSetHighlights([]);
+        sortResetStats();
         break;
       }
       case 'sortBubble': {
@@ -375,12 +551,14 @@ export default function App() {
           ? bInput.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n))
           : null;
         if (bUserArr && bUserArr.length >= 2) sortSetArray(bUserArr);
+        sortResetStats();
         const bubbleSpeed = 1000 / speed;
         const bubbleSort = async () => {
            try {
                let arr = bUserArr && bUserArr.length >= 2 ? [...bUserArr] : [...sortArray];
                for (let i = 0; i < arr.length; i++) {
                   for (let j = 0; j < arr.length - i - 1; j++) {
+                     sortIncComparisons();
                      sortSetHighlights([j, j+1]);
                      await delay(bubbleSpeed * 0.3);
                      if (arr[j] > arr[j+1]) {
@@ -388,6 +566,7 @@ export default function App() {
                          let temp = arr[j];
                          arr[j] = arr[j+1];
                          arr[j+1] = temp;
+                         sortIncSwaps();
                          sortSetArray([...arr]);
                          await delay(bubbleSpeed * 0.5);
                      }
@@ -401,6 +580,7 @@ export default function App() {
         break;
       }
       case 'sortQuick':
+        sortResetStats();
         const qSpeed = 1000 / speed;
         const quick = async (arr, low, high) => {
             if (low < high) {
@@ -413,6 +593,7 @@ export default function App() {
             let pivot = arr[high];
             let i = low - 1;
             for (let j = low; j < high; j++) {
+                sortIncComparisons();
                 sortSetHighlights([j, high, i]);
                 await delay(qSpeed * 0.3);
                 if (arr[j] < pivot) {
@@ -421,6 +602,7 @@ export default function App() {
                     let temp = arr[i];
                     arr[i] = arr[j];
                     arr[j] = temp;
+                    sortIncSwaps();
                     sortSetArray([...arr]);
                     await delay(qSpeed * 0.5);
                 }
@@ -428,6 +610,7 @@ export default function App() {
             let temp2 = arr[i + 1];
             arr[i + 1] = arr[high];
             arr[high] = temp2;
+            sortIncSwaps();
             sortSetArray([...arr]);
             play('push');
             await delay(qSpeed * 0.5);
@@ -439,6 +622,7 @@ export default function App() {
                 await quick(arr, 0, arr.length - 1);
                 sortSetHighlights([]);
                 play('bloom');
+                openQuiz();
             } catch (e) {}
         }
         runQuick();
@@ -498,11 +682,11 @@ export default function App() {
 
       {/* R3F Canvas Container */}
       <div className="canvas-container interactive-canvas">
-        <Canvas camera={{ position: [0, 5, 20], fov: 45 }} dpr={[1, 2]}>
-          <color attach="background" args={['#0a0a0f']} />
+        <Canvas camera={{ position: [0, 5, 20], fov: 45 }} dpr={[1, 1.5]}>
+          <color attach="background" args={[theme === 'light' ? '#fff8f0' : '#0a0a0f']} />
           <ambientLight intensity={0.5} />
           
-          <AmbientParticles count={800} />
+          <AmbientParticles count={250} />
           
           <Suspense fallback={null}>
             <SceneManager sceneIndex={currentScene} />
@@ -517,8 +701,15 @@ export default function App() {
       {/* UI Overlays */}
       {currentScene === 0 && <LandingOverlay />}
       {currentScene !== 0 && <IntroOverlay />}
+      {currentScene !== 0 && hasSeenIntro && <TheoryPanel />}
       {currentScene !== 0 && hasSeenIntro && <ControlPanel onOperation={handleOperation} />}
       {currentScene !== 0 && hasSeenIntro && <CodePanel activeOp={lastOp?.type} activeLine={activeLine} />}
+      {currentScene !== 0 && hasSeenIntro && <HelpGuide />}
+      {currentScene === 1 && <InfixPanel visible={showInfix} />}
+      {currentScene === 1 && <ParenthesesPanel visible={showParentheses} />}
+      <QuizPanel />
+      <CodeSandboxPanel />
+      <ThemeToggle />
     </>
   )
 }

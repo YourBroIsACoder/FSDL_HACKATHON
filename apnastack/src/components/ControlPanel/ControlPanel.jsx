@@ -5,20 +5,27 @@ import './ControlPanel.css'
 
 const SCENE_OPS = {
   1: [
-    { id: 'push',    label: 'PUSH',     icon: '⬆' },
-    { id: 'pop',     label: 'POP',      icon: '💥' },
-    { id: 'peek',    label: 'PEEK',     icon: '👁' },
+    { id: 'push',      label: 'PUSH',        icon: '⬆' },
+    { id: 'pop',       label: 'POP',         icon: '💥' },
+    { id: 'peek',      label: 'PEEK',        icon: '👁' },
+    { id: 'infixDemo', label: 'INFIX→POST',  icon: '∑' },
+    { id: 'balancedParens', label: 'BALANCED', icon: '⚖️' },
   ],
   2: [
     { id: 'enqueue', label: 'ENQUEUE',  icon: '➡' },
     { id: 'dequeue', label: 'DEQUEUE',  icon: '⬅' },
+    { id: 'scheduler', label: 'SCHEDULER', icon: '⏱️' },
   ],
   3: [
     { id: 'insert',  label: 'INSERT',   icon: '✦' },
     { id: 'delete',  label: 'DELETE',   icon: '✕' },
+    { id: 'reverse', label: 'REVERSE',  icon: '🔃' },
   ],
   4: [
     { id: 'insert',  label: 'INSERT',   icon: '🌿' },
+    { id: 'inorder',  label: 'INORDER',  icon: '⬅️' },
+    { id: 'preorder', label: 'PREORDER', icon: '⬆️' },
+    { id: 'postorder',label: 'POSTORDER',icon: '➡️' },
     { id: 'bfs',     label: 'BFS',      icon: '🔵' },
     { id: 'dfs',     label: 'DFS',      icon: '🔴' },
   ],
@@ -57,7 +64,7 @@ const SCENE_OPS = {
 const SCENE_PLACEHOLDERS = {
   1: 'value to push (e.g. 42)',
   2: 'value to enqueue (e.g. 99)',
-  3: 'value to insert (e.g. 7)',
+  3: 'val, index (e.g. 7, 0)',
   4: 'value to insert (e.g. 15)',
   5: 'node label OR src-tgt (e.g. A-B)',
   6: 'grid size (e.g. 4)',
@@ -76,6 +83,10 @@ export default function ControlPanel({ onOperation }) {
   const toggleAudio   = useAppStore((s) => s.toggleAudio)
   const speed         = useAppStore((s) => s.speed)
   const setSpeed      = useAppStore((s) => s.setSpeed)
+  const isStepMode    = useAppStore((s) => s.isStepMode)
+  const toggleStepMode = useAppStore((s) => s.toggleStepMode)
+  const triggerNextStep = useAppStore((s) => s.triggerNextStep)
+  const activeLine    = useAppStore((s) => s.activeLine)
   const [input, setInput] = useState('')
 
   const ops = SCENE_OPS[currentScene] || []
@@ -143,7 +154,32 @@ export default function ControlPanel({ onOperation }) {
         >
           {audioEnabled ? '🔊 ON' : '🔇 OFF'}
         </motion.button>
+        
+        <motion.button
+          className={`audio-btn ${isStepMode ? 'on' : ''}`}
+          onClick={toggleStepMode}
+          whileTap={{ scale: 0.9 }}
+          style={{ border: '1px solid var(--accent2)', color: isStepMode ? 'var(--accent2)' : 'var(--text-dim)', background: isStepMode ? 'color-mix(in srgb, var(--accent2) 20%, transparent)' : 'transparent' }}
+        >
+          {isStepMode ? '👨‍🏫 LECTURE ON' : '📖 LECTURE OFF'}
+        </motion.button>
       </div>
+
+      <AnimatePresence>
+        {isStepMode && activeLine !== -1 && (
+          <motion.button
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            className="next-step-btn"
+            onClick={triggerNextStep}
+            whileHover={{ scale: 1.05, boxShadow: '0 0 25px var(--accent)' }}
+            whileTap={{ scale: 0.95 }}
+          >
+            NEXT STEP ▶
+          </motion.button>
+        )}
+      </AnimatePresence>
     </motion.div>
   )
 }

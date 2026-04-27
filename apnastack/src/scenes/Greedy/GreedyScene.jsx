@@ -40,6 +40,7 @@ export default function GreedyScene() {
           padding: '32px 40px',
           border: '1px dashed rgba(0,255,224,0.2)',
           borderRadius: '16px',
+          background: 'rgba(10,10,15,0.9)',
           backdropFilter: 'blur(8px)',
         }}>
           Enter a target amount (e.g. 87)<br/>
@@ -51,15 +52,15 @@ export default function GreedyScene() {
 
   return (
     <Html
-      position={[0, 1.5, 0]}
+      position={[0, 3, 0]}
       style={{
         width: '520px',
-        transform: 'translate(-50%, -65%)',
+        transform: 'translate(-50%, -50%)',
       }}
     >
       <div style={{
         width: '520px',
-        maxHeight: 'calc(100vh - 230px)',
+        maxHeight: 'calc(100vh - 250px)',
         overflowY: 'auto',
         overflowX: 'hidden',
         fontFamily: 'JetBrains Mono, monospace',
@@ -88,7 +89,7 @@ export default function GreedyScene() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '12px' }}>
             <div>
               <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '9px', letterSpacing: '0.15em' }}>TARGET</div>
-              <div style={{ color: '#ffffff', fontSize: '30px', fontFamily: 'Syne, sans-serif', fontWeight: 900, lineHeight: 1 }}>
+              <div style={{ color: 'var(--text)', fontSize: '30px', fontFamily: 'Syne, sans-serif', fontWeight: 900, lineHeight: 1 }}>
                 {target}<span style={{ fontSize: '13px', opacity: 0.5 }}>¢</span>
               </div>
             </div>

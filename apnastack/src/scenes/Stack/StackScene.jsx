@@ -1,61 +1,47 @@
-import React, { useMemo, useRef } from 'react'
+import React, { useRef, useMemo } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { Html } from '@react-three/drei'
+import { Html, OrbitControls, RoundedBox } from '@react-three/drei'
 import * as THREE from 'three'
 import { useAppStore } from '../../store/dsStore'
 import { PALETTE } from '../../config/assets'
 
-import vertexShader from '../../shaders/tectonic.vert.glsl?raw'
-import fragmentShader from '../../shaders/tectonic.frag.glsl?raw'
-
-// Tectonic Plate component
+// Clean 3D Box component
 function StackLayer({ item, index, total }) {
   const meshRef = useRef()
-  const matRef = useRef()
 
-  // Animate pushing/popping
-  const targetY = index * 0.5 - (total * 0.25)
+  // Animate pushing
+  const targetY = index * 1.6 - (total * 0.8) // Spacing of 1.6
   const isTop = index === total - 1
 
-  const uniforms = useMemo(
-    () => ({
-      uTime: { value: 0 },
-      uIndex: { value: index },
-      uColor: { value: new THREE.Color(PALETTE.voidBlack).lerp(new THREE.Color('#1a1a24'), 0.5) },
-      uHeat: { value: isTop ? 1.0 : (index / total) * 0.5 },
-    }),
-    [index, total, isTop]
-  )
-
   useFrame((state, delta) => {
-    if (matRef.current) matRef.current.uniforms.uTime.value = state.clock.elapsedTime
     if (meshRef.current) {
       // Smooth lerp to target vertical position
-      meshRef.current.position.y += (targetY - meshRef.current.position.y) * 5 * delta
+      meshRef.current.position.y += (targetY - meshRef.current.position.y) * 8 * delta
     }
   })
 
+  // Start position higher up for dropping effect
   return (
-    <mesh ref={meshRef} position={[0, -5, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-      <planeGeometry args={[6, 4, 64, 64]} />
-      <shaderMaterial
-        ref={matRef}
-        vertexShader={vertexShader}
-        fragmentShader={fragmentShader}
-        uniforms={uniforms}
-        wireframe={false}
-        side={THREE.DoubleSide}
-      />
+    <group position={[0, 10, 0]} ref={meshRef}>
+      <RoundedBox args={[4, 1.2, 2]} radius={0.2} smoothness={4}>
+        <meshStandardMaterial 
+          color={isTop ? PALETTE.plasmaTeal : PALETTE.deepViolet}
+          opacity={0.9}
+          transparent
+          roughness={0.2}
+          emissive={isTop ? PALETTE.plasmaTeal : '#000'}
+          emissiveIntensity={isTop ? 0.4 : 0}
+        />
+      </RoundedBox>
       {/* 3D Label for the value */}
-      <Html position={[3.2, 0, 0]} right center className="pointer-events-none">
-        <div style={{ color: '#fff', fontFamily: 'JetBrains Mono', fontSize: '18px', fontWeight: 'bold' }}>
+      <Html position={[0, 0, 1.1]} center className="pointer-events-none">
+        <div style={{ color: 'var(--text)', fontFamily: 'JetBrains Mono, monospace', fontSize: '24px', fontWeight: 'bold' }}>
           {item}
         </div>
       </Html>
-    </mesh>
+    </group>
   )
 }
-
 
 // Procedural Fracture Explosion
 function PopExplosion({ yPos }) {
@@ -141,6 +127,7 @@ export default function StackScene() {
 
   return (
     <group position={[0, -1, 0]}>
+      <OrbitControls makeDefault enableZoom={true} enablePan={true} enableRotate={true} />
       <ambientLight intensity={0.4} />
       <directionalLight position={[0, 10, 5]} intensity={1} />
       

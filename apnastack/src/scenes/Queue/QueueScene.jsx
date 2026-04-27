@@ -78,7 +78,7 @@ export default function QueueScene() {
         const xPos = (queue.length / 2 - i) * 2.5
         return (
           <Html key={`${item}-${i}`} position={[xPos, 1.5, 0]} center className="pointer-events-none">
-            <div style={{ color: '#fff', fontSize:'12px', fontFamily: 'JetBrains Mono' }}>
+            <div style={{ color: 'var(--text)', fontSize:'12px', fontFamily: 'JetBrains Mono' }}>
               {item}
             </div>
           </Html>

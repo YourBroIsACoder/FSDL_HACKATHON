@@ -1,6 +1,7 @@
 import React, { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { Html } from '@react-three/drei'
+import { Html, OrbitControls } from '@react-three/drei'
+import { motion, AnimatePresence } from 'framer-motion'
 import * as THREE from 'three'
 import { useAppStore } from '../../store/dsStore'
 import { PALETTE } from '../../config/assets'
@@ -58,7 +59,7 @@ function TreeNode({ data }) {
         />
       </mesh>
       <Html position={[1, 1, 0]} className="pointer-events-none">
-        <div style={{ color: '#fff', fontFamily: 'JetBrains Mono', fontSize: '14px' }}>
+        <div style={{ color: 'var(--text)', fontFamily: 'JetBrains Mono', fontSize: '14px' }}>
           {data.val}
         </div>
       </Html>
@@ -97,10 +98,39 @@ function TreeEdges({ layout }) {
 
 export default function TreeScene() {
   const treeRoot = useAppStore(s => s.tree)
+  const traversalOrder = useAppStore(s => s.traversalOrder)
   const layout = useMemo(() => calculateTreeLayout(treeRoot), [treeRoot])
 
   return (
     <group position={[0, 0, 0]}>
+      <OrbitControls makeDefault enableZoom={true} enablePan={true} enableRotate={true} />
+      
+      {/* Lighting for depth */}
+      <ambientLight intensity={0.5} />
+      <pointLight position={[10, 10, 10]} intensity={2.5} color={PALETTE.moltenOrange} />
+      <pointLight position={[-10, -5, 5]} intensity={2} color={PALETTE.plasmaTeal} />
+
+      <Html position={[0, 10, -5]} center>
+         <div className="traversal-dashboard">
+            <div className="stat-label">TRAVERSAL SEQUENCE</div>
+            <div className="traversal-chips">
+               <AnimatePresence>
+                  {traversalOrder.map((val, i) => (
+                     <motion.span
+                        key={`${i}-${val}`}
+                        initial={{ scale: 0, opacity: 0, y: 10 }}
+                        animate={{ scale: 1, opacity: 1, y: 0 }}
+                        className="traversal-chip"
+                     >
+                        {val}
+                     </motion.span>
+                  ))}
+               </AnimatePresence>
+               {traversalOrder.length === 0 && <span className="text-var(--text-dim) italic opacity-50">Waiting for traversal...</span>}
+            </div>
+         </div>
+      </Html>
+
       <TreeEdges layout={layout} />
       {layout.map(node => (
         <TreeNode key={node.id} data={node} />

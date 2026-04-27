@@ -1,108 +1,104 @@
 import React, { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { Html } from '@react-three/drei'
+import { Html, OrbitControls, RoundedBox, Sparkles } from '@react-three/drei'
 import * as THREE from 'three'
 import { useAppStore } from '../../store/dsStore'
 import { PALETTE } from '../../config/assets'
 
-import vertexShader from '../../shaders/spacetime.vert.glsl?raw'
-import fragmentShader from '../../shaders/spacetime.frag.glsl?raw'
-
-// Spacetime Fabric
-function Fabric({ nodes }) {
-  const matRef = useRef()
-  
-  // Convert linked list sequence to 3D positions spread along the X axis
-  const nodePositions = useMemo(() => {
-    return nodes.map((n, i) => new THREE.Vector3((i - nodes.length / 2) * 5, 0, 0))
-  }, [nodes])
-
-  const uniforms = useMemo(() => ({
-    uTime: { value: 0 },
-    uNodePositions: { value: new Array(16).fill(new THREE.Vector3(0, -999, 0)) },
-    uNodeCount: { value: 0 }
-  }), [])
-
-  useFrame((state) => {
-    if (matRef.current) {
-      matRef.current.uniforms.uTime.value = state.clock.elapsedTime
-      matRef.current.uniforms.uNodeCount.value = nodePositions.length
-      nodePositions.forEach((pos, i) => {
-        if (i < 16) matRef.current.uniforms.uNodePositions.value[i].copy(pos)
-      })
-      matRef.current.uniformsNeedUpdate = true
-    }
-  })
-
-  return (
-    <mesh position={[0, -2, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-      <planeGeometry args={[100, 100, 128, 128]} />
-      <shaderMaterial
-        ref={matRef}
-        vertexShader={vertexShader}
-        fragmentShader={fragmentShader}
-        uniforms={uniforms}
-        transparent
-      />
-    </mesh>
-  )
-}
-
-function LLNode({ data, pos, isLast }) {
+function LLNode({ data, pos, isFirst, isLast }) {
   const meshRef = useRef()
-  
+  // Try to grab highlight if the store supports it for LL operations
+  const isHighlighted = useAppStore(s => s.traversalHighlights?.includes(data.id) || false)
+
   useFrame((state) => {
     if (meshRef.current) {
-      meshRef.current.rotation.y = state.clock.elapsedTime
-      meshRef.current.rotation.z = state.clock.elapsedTime * 0.5
+        // Subtle floating
+        meshRef.current.position.y = pos.y + Math.sin(state.clock.elapsedTime * 2 + pos.x) * 0.15
     }
   })
 
+  const glowColor = isHighlighted ? PALETTE.moltenOrange : PALETTE.plasmaTeal
+
   return (
-    <group position={pos}>
-      {/* The Gravity Singularity */}
-      <mesh ref={meshRef}>
-        <sphereGeometry args={[0.5, 32, 32]} />
-        <meshPhysicalMaterial 
-           color="#0a0a0f" 
-           metalness={0.9} 
-           roughness={0.1} 
-           clearcoat={1.0}
-           clearcoatRoughness={0.1}
-        />
-      </mesh>
+    <group position={pos} ref={meshRef}>
       
-      {/* Accretion Disk / Energy Ring */}
-      <mesh rotation={[Math.PI/2, 0, 0]}>
-        <torusGeometry args={[1.2, 0.05, 16, 64]} />
+      {/* HEAD Indicator */}
+      {isFirst && (
+        <Html position={[-0.3, 1.6, 0]} center className="pointer-events-none">
+          <div style={{ color: PALETTE.plasmaTeal, fontFamily: 'JetBrains Mono, monospace', fontSize: '14px', fontWeight: 'bold', textShadow: '0 0 10px #00ffe0' }}>
+            HEAD
+          </div>
+          <div style={{ width: '2px', height: '16px', background: PALETTE.plasmaTeal, margin: '4px auto 0 auto', boxShadow: '0 0 10px #00ffe0' }} />
+        </Html>
+      )}
+
+      {/* Node Box - Premium Glassy Look */}
+      <RoundedBox args={[2.2, 1.4, 1]} radius={0.15} smoothness={4}>
         <meshStandardMaterial 
-           color={PALETTE.plasmaTeal} 
-           emissive={PALETTE.plasmaTeal}
-           emissiveIntensity={1.5}
-           transparent 
-           opacity={0.8} 
+           color={PALETTE.deepViolet} 
+           metalness={0.3}
+           opacity={0.9} 
+           transparent
+           roughness={0.1}
+           emissive={glowColor}
+           emissiveIntensity={isHighlighted ? 0.8 : 0.2}
         />
-      </mesh>
+      </RoundedBox>
+      
+      {/* Pointer Box Segment (visual separator) */}
+      <group position={[0.7, 0, 0.05]}>
+        <mesh>
+            <boxGeometry args={[0.05, 1.4, 1.01]} />
+            <meshBasicMaterial color={PALETTE.ghostWhite} transparent opacity={0.2} />
+        </mesh>
+      </group>
 
       {/* Connection arrow to next */}
       {!isLast && (
-        <mesh position={[2.5, 0, 0]}>
-          <boxGeometry args={[3, 0.05, 0.05]} />
-          <meshStandardMaterial 
-             color={PALETTE.ghostWhite} 
-             emissive={PALETTE.ghostWhite}
-             emissiveIntensity={0.5}
-             transparent 
-             opacity={0.5} 
-          />
-        </mesh>
+        <group position={[1.5, 0, 0]}>
+          {/* Line */}
+          <mesh position={[0.7, 0, 0]}>
+            <boxGeometry args={[1.4, 0.05, 0.05]} />
+            <meshBasicMaterial color={glowColor} transparent opacity={0.8} />
+          </mesh>
+          {/* Arrowhead */}
+          <mesh position={[1.4, 0, 0]} rotation={[0, 0, -Math.PI / 2]}>
+            <coneGeometry args={[0.15, 0.3, 8]} />
+            <meshBasicMaterial color={glowColor} />
+          </mesh>
+        </group>
       )}
 
-      <Html position={[0, 2, 0]} center className="pointer-events-none">
-        <div style={{ color: '#00ffe0', fontFamily: 'JetBrains Mono', fontWeight: 'bold' }}>
+      {/* NULL Indicator for Tail */}
+      {isLast && (
+        <group position={[1.5, 0, 0]}>
+          <mesh position={[0.4, 0, 0]}>
+            <boxGeometry args={[0.8, 0.05, 0.05]} />
+            <meshBasicMaterial color={PALETTE.moltenOrange} transparent opacity={0.6} />
+          </mesh>
+          <Html position={[1.1, 0, 0]} center className="pointer-events-none">
+             <div style={{ color: PALETTE.moltenOrange, fontFamily: 'JetBrains Mono', fontSize: '12px', fontWeight: 'bold' }}>
+              NULL
+            </div>
+          </Html>
+        </group>
+      )}
+
+      {/* Value */}
+      <Html position={[-0.3, 0, 0.6]} center className="pointer-events-none">
+        <div style={{ color: 'var(--text)', fontFamily: 'JetBrains Mono, monospace', fontSize: '24px', fontWeight: 'bold' }}>
           {data.val}
         </div>
       </Html>
+      {/* Pointer Label */}
+      <Html position={[0.7, 0, 0.6]} center className="pointer-events-none">
+         <div style={{ color: glowColor, fontFamily: 'JetBrains Mono, monospace', fontSize: '10px' }}>
+          *next
+        </div>
+      </Html>
+
+      {/* Ambient particles around the node */}
+      <Sparkles count={10} scale={3} size={2} speed={0.4} opacity={0.2} color={glowColor} />
     </group>
   )
 }
@@ -110,19 +106,23 @@ function LLNode({ data, pos, isLast }) {
 export default function LinkedListScene() {
   const ll = useAppStore(s => s.linkedList)
 
-  // Calculate layout natively
+  // Calculate horizontal layout
   const positions = useMemo(() => 
-    ll.map((n, i) => new THREE.Vector3((i - ll.length / 2) * 5 + 2.5, -2.5, 0)),
+    ll.map((n, i) => new THREE.Vector3((i - ll.length / 2) * 4.5 + 2.25, 0, 0)),
   [ll])
 
   return (
-    <group>
-      <Fabric nodes={ll} />
+    <group position={[0, -0.5, 0]}>
+      <OrbitControls makeDefault enableZoom={true} enablePan={true} enableRotate={true} />
+      <ambientLight intensity={0.6} />
+      <directionalLight position={[0, 10, 5]} intensity={1} />
+      
       {ll.map((node, i) => (
         <LLNode 
           key={node.id} 
           data={node} 
           pos={positions[i]} 
+          isFirst={i === 0}
           isLast={i === ll.length - 1} 
         />
       ))}

@@ -1,13 +1,12 @@
 import React, { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { Html } from '@react-three/drei'
+import { Html, OrbitControls } from '@react-three/drei'
 import * as THREE from 'three'
 import * as d3 from 'd3'
 import { useAppStore } from '../../store/dsStore'
 import { PALETTE } from '../../config/assets'
 
-// Optimized Edge renderer using standard Lines for performance
-function GraphEdges({ edges }) {
+function GraphEdges({ edges, theme }) {
   const lineRef = useRef()
   
   useFrame(() => {
@@ -24,12 +23,16 @@ function GraphEdges({ edges }) {
   return (
     <lineSegments ref={lineRef}>
       <bufferGeometry />
-      <lineBasicMaterial color={PALETTE.plasmaTeal} transparent opacity={0.4} />
+      <lineBasicMaterial 
+        color={theme === 'light' ? '#000000' : PALETTE.plasmaTeal} 
+        transparent 
+        opacity={theme === 'light' ? 0.3 : 0.6} 
+      />
     </lineSegments>
   )
 }
 
-function GraphNode({ data }) {
+function GraphNode({ data, theme }) {
   const meshRef = useRef()
   const isHighlighted = useAppStore(s => s.graphHighlights.includes(data.id))
 
@@ -43,23 +46,32 @@ function GraphNode({ data }) {
     }
   })
 
+  // Theme-aware node colors
+  const baseColor = theme === 'light' ? '#111111' : PALETTE.deepViolet;
+  const emColor = isHighlighted ? PALETTE.moltenOrange : (theme === 'light' ? '#333333' : PALETTE.plasmaTeal);
+
   return (
     <mesh ref={meshRef}>
-      <icosahedronGeometry args={[0.8, 1]} />
-      <meshPhysicalMaterial 
-        color={isHighlighted ? '#ffffff' : PALETTE.deepViolet} 
-        transmission={isHighlighted ? 0 : 0.9} // Glassy if not highlighted
-        opacity={1}
-        transparent={true}
-        roughness={0.1}
-        ior={1.5}
-        thickness={2}
-        emissive={isHighlighted ? PALETTE.moltenOrange : PALETTE.plasmaTeal}
-        emissiveIntensity={isHighlighted ? 2 : 0.2}
-        wireframe={false}
+      <icosahedronGeometry args={[0.8, 2]} />
+      <meshStandardMaterial 
+        color={isHighlighted ? '#ffffff' : baseColor}
+        emissive={emColor}
+        emissiveIntensity={isHighlighted ? 2 : (theme === 'light' ? 0 : 0.8)}
+        roughness={0.2}
+        metalness={0.8}
       />
       <Html position={[0, 1.2, 0]} center className="pointer-events-none">
-        <div style={{ color: '#fff', fontSize:'12px', fontFamily: 'JetBrains Mono', background: 'rgba(0,0,0,0.5)', padding: '2px 6px', borderRadius: '4px', border: `1px solid ${PALETTE.plasmaTeal}` }}>
+        <div style={{ 
+          color: theme === 'light' ? '#000' : '#fff', 
+          fontSize:'14px', 
+          fontWeight: 'bold',
+          fontFamily: 'JetBrains Mono', 
+          background: theme === 'light' ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.5)', 
+          padding: '2px 8px', 
+          borderRadius: '6px', 
+          border: `1px solid ${isHighlighted ? PALETTE.moltenOrange : (theme === 'light' ? '#000' : PALETTE.plasmaTeal)}`,
+          backdropFilter: 'blur(4px)'
+        }}>
             {data.label}
         </div>
       </Html>
@@ -70,6 +82,7 @@ function GraphNode({ data }) {
 export default function GraphScene() {
   const nodes = useAppStore(s => s.graphNodes)
   const edges = useAppStore(s => s.graphEdges)
+  const theme = useAppStore(s => s.theme)
   
   const simulation = useMemo(() => {
     return d3.forceSimulation()
@@ -95,9 +108,10 @@ export default function GraphScene() {
   return (
     <group>
       <ambientLight intensity={0.5} />
-      <GraphEdges edges={edges} />
+      <OrbitControls makeDefault enableZoom={true} enablePan={true} enableRotate={true} />
+      <GraphEdges edges={edges} theme={theme} />
       {nodes.map(node => (
-        <GraphNode key={node.id} data={node} />
+        <GraphNode key={node.id} data={node} theme={theme} />
       ))}
     </group>
   )

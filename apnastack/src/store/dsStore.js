@@ -7,16 +7,30 @@ export const useAppStore = create((set, get) => ({
   setScene: (idx) => set({ currentScene: idx, hasSeenIntro: false }),
   setSeenIntro: (val) => set({ hasSeenIntro: val }),
 
+  // ── Theme ─────────────────────────────────────────────────────────────────
+  theme: 'dark', // 'dark' | 'light'
+  toggleTheme: () => set((s) => {
+    const next = s.theme === 'dark' ? 'light' : 'dark'
+    document.documentElement.setAttribute('data-theme', next)
+    return { theme: next }
+  }),
+
   // ── Audio ──────────────────────────────────────────────────────────────────
   audioEnabled: false,
   toggleAudio: () => set((s) => ({ audioEnabled: !s.audioEnabled })),
 
-  // ── Animation Speed ────────────────────────────────────────────────────────
-  speed: 1.0,  // multiplier applied to all Tone.js and Framer durations
+  // ── Animation Speed & Control ──────────────────────────────────────────────
+  speed: 1.0,  
+  isStepMode: false,
+  stepTrigger: 0,
   setSpeed: (v) => set({ speed: v }),
+  toggleStepMode: () => set((s) => ({ isStepMode: !s.isStepMode })),
+  triggerNextStep: () => set((s) => ({ stepTrigger: s.stepTrigger + 1 })),
 
   // ── Transient Effects & State ─────────────────────────────────────────────
   activeLine: -1,
+  showParentheses: false,
+  toggleParentheses: () => set((s) => ({ showParentheses: !s.showParentheses })),
   setActiveLine: (line) => set({ activeLine: line }),
   effects: [],
   triggerEffect: (type, params) => {
@@ -26,6 +40,15 @@ export const useAppStore = create((set, get) => ({
       set((s) => ({ effects: s.effects.filter(e => e.id !== id) }))
     }, 2000)
   },
+
+  // ── Quiz Mode ──────────────────────────────────────────────────────────────
+  quizVisible: false,
+  openQuiz: () => set({ quizVisible: true }),
+  closeQuiz: () => set({ quizVisible: false }),
+
+  // ── Code Sandbox ───────────────────────────────────────────────────────────
+  sandboxVisible: false,
+  toggleSandbox: () => set((s) => ({ sandboxVisible: !s.sandboxVisible })),
 
   // ── Stack DS ──────────────────────────────────────────────────────────────
   stack: [],
@@ -57,6 +80,8 @@ export const useAppStore = create((set, get) => ({
 
   // ── Linked List DS ────────────────────────────────────────────────────────
   linkedList: [],   // array of { id, val, next }
+  llHighlight: null,
+  llSetHighlight: (id) => set({ llHighlight: id }),
   llInsert: (val, idx) => set((s) => {
     const node = { id: Date.now(), val, next: null }
     const list = [...s.linkedList]
@@ -64,6 +89,7 @@ export const useAppStore = create((set, get) => ({
     return { linkedList: list }
   }),
   llDelete: (id) => set((s) => ({ linkedList: s.linkedList.filter(n => n.id !== id) })),
+  llReverse: () => set((s) => ({ linkedList: [...s.linkedList].reverse() })),
 
   // ── Tree DS ───────────────────────────────────────────────────────────────
   tree: null,  // { id, val, left, right }
@@ -129,10 +155,18 @@ export const useAppStore = create((set, get) => ({
   }),
   sortHighlights: [], // indices being compared/swapped
   sortSetHighlights: (indices) => set({ sortHighlights: indices }),
+  sortStats: { comparisons: 0, swaps: 0 },
+  sortResetStats: () => set({ sortStats: { comparisons: 0, swaps: 0 } }),
+  sortIncComparisons: () => set(s => ({ sortStats: { ...s.sortStats, comparisons: s.sortStats.comparisons + 1 } })),
+  sortIncSwaps: () => set(s => ({ sortStats: { ...s.sortStats, swaps: s.sortStats.swaps + 1 } })),
 
   // ── Recursion DS ──────────────────────────────────────────────────────────
   recursionFrames: [], 
   recursionSetFrames: (frames) => set({ recursionFrames: frames }),
+
+  // ── Traversals ────────────────────────────────────────────────────────────
+  traversalOrder: [],
+  setTraversalOrder: (order) => set({ traversalOrder: order }),
 
   // ── Operation Log ─────────────────────────────────────────────────────────
   lastOp: null,   // { type, value, timestamp }

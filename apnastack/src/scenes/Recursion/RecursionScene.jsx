@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react'
-import { Html, Line } from '@react-three/drei'
+import { Html, Line, OrbitControls } from '@react-three/drei'
 import { useAppStore } from '../../store/dsStore'
 
 // Each node in the call tree
@@ -49,7 +49,7 @@ const TreeNode = ({ frame, x, y, parentX, parentY, isRoot }) => {
         >
           <div style={{
             fontFamily: 'JetBrains Mono, monospace',
-            color: '#ffffff',
+            color: 'var(--text)',
             fontSize: '13px',
             fontWeight: 'bold',
           }}>
@@ -115,6 +115,7 @@ export default function RecursionScene() {
 
   return (
     <group>
+      <OrbitControls makeDefault enableZoom={true} enablePan={true} enableRotate={true} />
       {/* Legend */}
       <Html position={[5.5, 5, 0]} center className="pointer-events-none">
         <div style={{
@@ -148,7 +149,7 @@ export default function RecursionScene() {
           fontFamily: 'Syne, sans-serif',
           fontWeight: 900,
           fontSize: '18px',
-          color: '#ffffff',
+          color: 'var(--text)',
           letterSpacing: '0.2em',
           textTransform: 'uppercase',
           opacity: 0.7,

@@ -1,28 +1,84 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
 @import "tailwindcss";
 
-/* ── Typography & Base Customization ─────────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
+/* ════════════════════════════════════════════════════════════════════════════
+   THEME TOKENS  —  all colours resolved via CSS custom properties
+   ════════════════════════════════════════════════════════════════════════════ */
 
-:root {
-  --void-black: #0a0a0f;
-  --plasma-teal: #00ffe0;
-  --molten-orange: #ff6b35;
-  --deep-violet: #7c3aed;
-  --ghost-white: #f0fffe;
-  /* Height of ControlPanel + bottom gap */
+/* ── Dark (default) ────────────────────────────────────────────────────────── */
+:root,
+[data-theme="dark"] {
+  --bg:            #0a0a0f;
+  --bg-panel:      rgba(10, 10, 15, 0.85);
+  --bg-panel-solid:#0d0d14;
+  --border:        rgba(0, 255, 224, 0.2);
+  --border-strong: rgba(0, 255, 224, 0.5);
+  --accent:        #00ffe0;         /* cyan  */
+  --accent2:       #ff00ff;         /* magenta */
+  --accent3:       #7c3aed;         /* violet */
+  --text:          #f0fffe;
+  --text-dim:      rgba(240, 255, 254, 0.4);
+  --text-mid:      rgba(240, 255, 254, 0.7);
+  --glow:          0 0 20px rgba(0, 255, 224, 0.4);
+  --glow-panel:    0 0 40px rgba(0, 255, 224, 0.07), 0 8px 32px rgba(0,0,0,0.5);
+  --shadow:        rgba(0, 0, 0, 0.5);
+  --tab-bg:        rgba(0, 255, 224, 0.1);
+  --btn-bg:        rgba(0, 255, 224, 0.08);
+  --btn-hover:     rgba(0, 255, 224, 0.18);
+  --input-bg:      rgba(255, 255, 255, 0.04);
+  --slider-track:  rgba(0, 255, 224, 0.2);
+  --audio-bg:      rgba(124, 58, 237, 0.12);
+  --audio-border:  rgba(124, 58, 237, 0.27);
+  --audio-color:   #7c3aed;
+  --scanner-color: rgba(0, 255, 224, 0.05);
+  --transition:    0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  /* panel-safe-inset used by body */
   --panel-safe-inset: 210px;
 }
 
+/* ── Light  "Solar Flare" ───────────────────────────────────────────────────
+   High-contrast warm-white with searing orange/red accents.
+   Feels like looking directly into the sun—intentionally "crazy".           */
+[data-theme="light"] {
+  --bg:            #fff8f0;
+  --bg-panel:      rgba(255, 252, 245, 0.92);
+  --bg-panel-solid:#fff3e6;
+  --border:        rgba(255, 100, 0, 0.35);
+  --border-strong: rgba(255, 100, 0, 0.7);
+  --accent:        #ff4500;         /* orange-red */
+  --accent2:       #ffcc00;         /* solar gold */
+  --accent3:       #e600a3;         /* hot pink   */
+  --text:          #1a0a00;
+  --text-dim:      rgba(26, 10, 0, 0.45);
+  --text-mid:      rgba(26, 10, 0, 0.75);
+  --glow:          0 0 20px rgba(255, 69, 0, 0.5);
+  --glow-panel:    0 0 40px rgba(255, 100, 0, 0.12), 0 8px 32px rgba(200, 80, 0, 0.15);
+  --shadow:        rgba(120, 30, 0, 0.2);
+  --tab-bg:        rgba(255, 69, 0, 0.12);
+  --btn-bg:        rgba(255, 69, 0, 0.1);
+  --btn-hover:     rgba(255, 69, 0, 0.22);
+  --input-bg:      rgba(255, 255, 255, 0.7);
+  --slider-track:  rgba(255, 69, 0, 0.25);
+  --audio-bg:      rgba(230, 0, 163, 0.1);
+  --audio-border:  rgba(230, 0, 163, 0.35);
+  --audio-color:   #e600a3;
+  --scanner-color: rgba(255, 69, 0, 0.08);
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   BASE
+   ════════════════════════════════════════════════════════════════════════════ */
 body {
   margin: 0;
   padding: 0;
-  background-color: var(--void-black);
-  color: var(--ghost-white);
+  background-color: var(--bg);
+  color: var(--text);
   font-family: 'Syne', sans-serif;
-  overflow: hidden; /* Fully static app feel */
+  overflow: hidden;
+  transition: background-color var(--transition), color var(--transition);
 }
 
-/* ── Fullscreen Layout ───────────────────────────────────────────────────── */
 #root {
   width: 100vw;
   height: 100vh;
@@ -42,11 +98,151 @@ body {
   pointer-events: auto !important;
 }
 
-/* ── Global: prevent R3F Html pop-overs from bleeding into ControlPanel ─── */
-/* The ControlPanel sits in the bottom ~210px. Push the drei Html portal       */
-/* container up so it only occupies the safe zone.                             */
 .canvas-container canvas {
-  /* The actual WebGL surface: full height as before */
   display: block;
 }
 
+/* ════════════════════════════════════════════════════════════════════════════
+   GLOBAL THEME TRANSITION — applied automatically when data-theme switches
+   ════════════════════════════════════════════════════════════════════════════ */
+*, *::before, *::after {
+  transition:
+    background-color var(--transition),
+    border-color     var(--transition),
+    color            var(--transition),
+    box-shadow       var(--transition),
+    opacity          var(--transition);
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   THEME TOGGLE BUTTON  (global pill — visible everywhere)
+   ════════════════════════════════════════════════════════════════════════════ */
+.theme-toggle {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 2000;
+  cursor: pointer;
+  width: 56px;
+  height: 30px;
+  border-radius: 999px;
+  border: 1.5px solid var(--border-strong);
+  background: var(--bg-panel);
+  backdrop-filter: blur(14px);
+  box-shadow: var(--glow);
+  display: flex;
+  align-items: center;
+  padding: 3px;
+  gap: 0;
+  outline: none;
+  overflow: hidden;
+}
+
+.theme-toggle-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  flex-shrink: 0;
+  transform: translateX(0);
+}
+
+[data-theme="light"] .theme-toggle-thumb {
+  transform: translateX(26px);
+}
+
+.theme-toggle-track {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+/* Crazy flash animation on toggle */
+@keyframes theme-flash {
+  0%   { opacity: 0; }
+  30%  { opacity: 0.6; }
+  100% { opacity: 0; }
+}
+.theme-flash-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  background: radial-gradient(circle at center, var(--accent) 0%, transparent 70%);
+  animation: theme-flash 0.5s ease-out forwards;
+}
+
+.sorting-dashboard {
+  display: flex;
+  gap: 20px;
+  background: var(--bg-panel);
+  padding: 20px 40px;
+  border-radius: 24px;
+  border: 1px solid var(--border-strong);
+  backdrop-filter: blur(20px);
+  box-shadow: var(--glow-panel);
+  pointer-events: none;
+  min-width: 400px;
+  justify-content: center;
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+  font-weight: 800;
+}
+
+.stat-value {
+  font-family: 'Syne', sans-serif;
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--accent);
+}
+
+.traversal-dashboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-panel);
+  padding: 16px 32px;
+  border-radius: 20px;
+  border: 1px solid var(--border-strong);
+  backdrop-filter: blur(20px);
+  box-shadow: var(--glow-panel);
+  pointer-events: none;
+  min-width: 350px;
+}
+
+.traversal-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.traversal-chip {
+  padding: 4px 12px;
+  background: var(--accent);
+  color: var(--bg);
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 800;
+  font-size: 14px;
+  box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 30%, transparent);
+}

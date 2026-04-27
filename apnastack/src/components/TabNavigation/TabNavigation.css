@@ -1,6 +1,6 @@
 .tab-navigation {
   position: fixed;
-  top: 32px;
+  top: 24px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
@@ -10,18 +10,19 @@
 .tab-container {
   display: flex;
   gap: 8px;
-  background: rgba(10, 10, 15, 0.6);
+  background: var(--bg-panel);
   backdrop-filter: blur(12px);
   padding: 6px;
   border-radius: 12px;
-  border: 1px solid rgba(0, 255, 224, 0.2);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border);
+  box-shadow: var(--glow-panel);
   max-width: 95vw;
   overflow-x: auto;
   white-space: nowrap;
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
+
 .tab-container::-webkit-scrollbar {
   display: none;
 }
@@ -42,22 +43,22 @@
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.1em;
-  color: rgba(240, 255, 254, 0.4);
+  color: var(--text-dim);
   z-index: 2;
   position: relative;
   transition: color 0.3s ease;
 }
 
 .tab-button:hover .tab-label {
-  color: rgba(240, 255, 254, 0.8);
+  color: var(--text-mid);
 }
 
 .tab-button.active .tab-label {
-  color: #00ffe0;
+  color: var(--accent);
 }
 
 .tab-button.active {
-  background: rgba(0, 255, 224, 0.1);
+  background: var(--tab-bg);
 }
 
 .tab-indicator {
@@ -66,20 +67,18 @@
   left: 10%;
   width: 80%;
   height: 2px;
-  background: #00ffe0;
-  box-shadow: 0 0 10px #00ffe0;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
   border-radius: 2px;
 }
 
-/* Hover effect */
+/* Hover sweep */
 .tab-button::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 255, 224, 0.05);
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: var(--scanner-color);
   transform: translateY(100%);
   transition: transform 0.2s ease;
 }
@@ -89,11 +88,6 @@
 }
 
 @media (max-width: 768px) {
-  .tab-container {
-    padding: 4px;
-  }
-  .tab-label {
-    font-size: 10px;
-    padding: 4px 8px;
-  }
+  .tab-container { padding: 4px; }
+  .tab-label { font-size: 10px; padding: 4px 8px; }
 }

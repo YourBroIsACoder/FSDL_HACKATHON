@@ -1,0 +1,122 @@
+.help-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(10, 10, 15, 0.85);
+  border: 2px solid rgba(0, 255, 224, 0.6);
+  color: #00ffe0;
+  font-family: 'Syne', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  cursor: pointer;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  transition: all 0.2s ease;
+}
+
+.help-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.help-modal {
+  background: rgba(15, 15, 20, 0.95);
+  border: 1px solid rgba(0, 255, 224, 0.3);
+  border-radius: 20px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 255, 224, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.help-modal::-webkit-scrollbar {
+  width: 6px;
+}
+.help-modal::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 224, 0.3);
+  border-radius: 4px;
+}
+
+.help-header {
+  padding: 24px 32px;
+  border-bottom: 1px solid rgba(0, 255, 224, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  background: rgba(15, 15, 20, 0.95);
+  z-index: 2;
+}
+
+.help-header h2 {
+  margin: 0;
+  font-family: 'Syne', sans-serif;
+  color: #fff;
+  font-size: 20px;
+  letter-spacing: 0.1em;
+}
+
+.help-close {
+  background: transparent;
+  border: none;
+  color: #888;
+  font-size: 20px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.help-close:hover {
+  color: #ff3366;
+}
+
+.help-content {
+  padding: 24px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.help-section h3 {
+  margin: 0 0 8px 0;
+  font-family: 'JetBrains Mono', monospace;
+  color: #00ffe0;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.help-section p {
+  margin: 0;
+  font-family: 'Syne', sans-serif;
+  color: rgba(240, 255, 254, 0.8);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.help-section strong {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+}

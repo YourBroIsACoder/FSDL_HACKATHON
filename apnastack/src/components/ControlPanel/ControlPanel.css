@@ -1,11 +1,12 @@
+/* All colours via CSS custom properties — works in both dark & light themes */
 .control-panel {
   position: fixed;
   bottom: 24px;
   left: 50%;
   translate: -50% 0;
   z-index: 200;
-  background: rgba(10,10,15,0.82);
-  border: 1px solid #00ffe033;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   border-radius: 20px;
@@ -15,7 +16,7 @@
   gap: 12px;
   min-width: 420px;
   max-width: 600px;
-  box-shadow: 0 0 40px #00ffe011, 0 8px 32px #0005;
+  box-shadow: var(--glow-panel);
   cursor: grab;
 }
 .control-panel:active { cursor: grabbing; }
@@ -24,7 +25,8 @@
   font-family: 'Syne', sans-serif;
   font-size: 11px;
   letter-spacing: 0.2em;
-  color: #00ffe088;
+  color: var(--accent);
+  opacity: 0.8;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -32,9 +34,9 @@
 }
 .scene-dot {
   width: 6px; height: 6px;
-  background: #00ffe0;
+  background: var(--accent);
   border-radius: 50%;
-  box-shadow: 0 0 8px #00ffe0;
+  box-shadow: 0 0 8px var(--accent);
   animation: pulse-dot 2s infinite;
 }
 @keyframes pulse-dot {
@@ -43,11 +45,11 @@
 }
 
 .panel-input {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid #00ffe033;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 10px 14px;
-  color: #f0fffe;
+  color: var(--text);
   font-family: 'JetBrains Mono', monospace;
   font-size: 13px;
   outline: none;
@@ -55,9 +57,10 @@
   width: 100%;
   box-sizing: border-box;
 }
+.panel-input::placeholder { color: var(--text-dim); }
 .panel-input:focus {
-  border-color: #00ffe0;
-  box-shadow: 0 0 12px #00ffe033;
+  border-color: var(--accent);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 30%, transparent);
 }
 
 .panel-ops {
@@ -71,19 +74,18 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(0,255,224,0.08);
-  border: 1px solid #00ffe033;
+  background: var(--btn-bg);
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 8px 14px;
-  color: #00ffe0;
+  color: var(--accent);
   font-family: 'Syne', sans-serif;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.12em;
   cursor: pointer;
-  transition: background 0.2s;
 }
-.op-btn:hover { background: rgba(0,255,224,0.16); }
+.op-btn:hover { background: var(--btn-hover); }
 
 .op-icon { font-size: 14px; }
 
@@ -98,7 +100,7 @@
   gap: 8px;
   font-family: 'Syne', sans-serif;
   font-size: 10px;
-  color: #f0fffe66;
+  color: var(--text-dim);
   letter-spacing: 0.15em;
   flex: 1;
 }
@@ -106,7 +108,7 @@
   -webkit-appearance: none;
   flex: 1;
   height: 3px;
-  background: #00ffe033;
+  background: var(--slider-track);
   border-radius: 2px;
   outline: none;
 }
@@ -114,32 +116,48 @@
   -webkit-appearance: none;
   width: 14px; height: 14px;
   border-radius: 50%;
-  background: #00ffe0;
-  box-shadow: 0 0 8px #00ffe0;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
   cursor: pointer;
 }
 .ctrl-val {
-  color: #00ffe0;
+  color: var(--accent);
   font-family: 'JetBrains Mono', monospace;
   font-size: 10px;
   min-width: 28px;
 }
 .audio-btn {
-  background: rgba(124,58,237,0.12);
-  border: 1px solid #7c3aed44;
+  background: var(--audio-bg);
+  border: 1px solid var(--audio-border);
   border-radius: 8px;
   padding: 6px 12px;
-  color: #7c3aed;
+  color: var(--audio-color);
   font-family: 'Syne', sans-serif;
   font-size: 10px;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s;
   letter-spacing: 0.1em;
 }
 .audio-btn.on {
-  background: rgba(0,255,224,0.12);
-  border-color: #00ffe066;
-  color: #00ffe0;
-  box-shadow: 0 0 12px #00ffe033;
+  background: var(--btn-bg);
+  border-color: var(--border-strong);
+  color: var(--accent);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 20%, transparent);
 }
+
+.next-step-btn {
+  margin-top: 10px;
+  padding: 14px;
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  border-radius: 12px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  box-shadow: 0 0 15px color-mix(in srgb, var(--accent) 40%, transparent);
+  transition: all 0.2s;
+}
+

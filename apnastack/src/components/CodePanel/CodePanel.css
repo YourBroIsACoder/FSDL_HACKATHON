@@ -1,9 +1,9 @@
 .code-panel {
   position: fixed;
-  top: 32px;
+  top: 100px;
   right: 32px;
   width: 320px;
-  background: rgba(10, 10, 15, 0.72);
+  background: rgba(10, 10, 15, 0.95);
   border: 1px solid #00ffe033;
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);

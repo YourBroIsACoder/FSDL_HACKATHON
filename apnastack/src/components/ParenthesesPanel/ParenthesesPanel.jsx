@@ -53,7 +53,7 @@ const ACTION_COLOR = {
   skip: 'var(--text-dim)',
 }
 
-export default function ParenthesesPanel({ visible }) {
+export default function ParenthesesPanel({ visible, onClose }) {
   const [expr, setExpr] = useState('{[()]}')
   const [steps, setSteps] = useState([])
   const [stepIdx, setStepIdx] = useState(-1)
@@ -113,6 +113,26 @@ export default function ParenthesesPanel({ visible }) {
           boxShadow: 'var(--glow-panel)',
         }}
       >
+        <button 
+          onClick={onClose}
+          style={{
+            position: 'absolute',
+            top: '16px',
+            right: '20px',
+            background: 'transparent',
+            border: 'none',
+            color: 'var(--text-dim)',
+            fontSize: '18px',
+            cursor: 'pointer',
+            padding: '4px',
+            zIndex: 10
+          }}
+          onMouseOver={(e) => e.currentTarget.style.color = 'var(--accent)'}
+          onMouseOut={(e) => e.currentTarget.style.color = 'var(--text-dim)'}
+        >
+          ✕
+        </button>
+
         <div style={{ color: 'var(--accent)', fontSize: 11, letterSpacing: '0.2em', fontWeight: 700, marginBottom: 14 }}>
           BALANCED PARENTHESES CHECKER
         </div>

@@ -90,7 +90,7 @@ export default function LandingScene() {
       <directionalLight position={[10, 10, 5]} intensity={1.5} color={PALETTE.plasmaTeal} />
       <directionalLight position={[-10, -10, -5]} intensity={1.5} color={PALETTE.moltenOrange} />
       
-      <Center position={[0, 0, -2]}>
+      <Center position={[0, 3.5, -2]}>
         <Text
           fontSize={4.5}
           maxWidth={200}

@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useAppStore } from '../../store/dsStore';
+import { useQuizStore } from '../../store/quizStore';
 import './TabNavigation.css';
 
 const TABS = [
@@ -50,6 +51,20 @@ export default function TabNavigation() {
         >
           <span className="tab-label">💻 SANDBOX</span>
         </button>
+
+        {currentScene !== 0 && (
+          <button
+            className="tab-button"
+            onClick={() => useQuizStore.getState().openSelector()}
+            style={{ 
+              color: '#00ffe0',
+              fontWeight: 'bold',
+              textShadow: '0 0 10px rgba(0, 255, 224, 0.5)'
+            }}
+          >
+            <span className="tab-label">🎓 QUIZZES</span>
+          </button>
+        )}
       </div>
     </nav>
   );

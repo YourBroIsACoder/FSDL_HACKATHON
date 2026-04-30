@@ -1,0 +1,244 @@
+{
+  "1": {
+    "title": "Stack",
+    "popup": [
+      { "question": "What is the time complexity of pushing an element onto a stack?", "options": ["O(1)", "O(n)", "O(log n)", "O(n^2)"], "correct": 0 },
+      { "question": "Which principle does a Stack follow?", "options": ["FIFO", "LIFO", "FILO", "Random Access"], "correct": 1 },
+      { "question": "What operation removes the top element?", "options": ["push()", "peek()", "pop()", "remove()"], "correct": 2 },
+      { "question": "Which data structure handles recursion?", "options": ["Queue", "Linked List", "Tree", "Stack"], "correct": 3 },
+      { "question": "If you push A, B, C, which is popped first?", "options": ["A", "B", "C", "None"], "correct": 2 }
+    ],
+    "concept": [
+      { "question": "If a stack is implemented using an array, what happens during a Stack Overflow?", "options": ["The array expands automatically", "The program crashes/throws exception", "Oldest element is overwritten", "Nothing"], "correct": 1, "explanationRight": "Correct! Static arrays have fixed bounds.", "explanationWrong": "Incorrect. Static arrays don't auto-expand; that's dynamic arrays." },
+      { "question": "How many stacks are needed to implement a Queue?", "options": ["One", "Two", "Three", "Four"], "correct": 1, "explanationRight": "Correct! Two stacks can reverse LIFO to FIFO.", "explanationWrong": "One stack isn't enough to reverse the order." },
+      { "question": "Which algorithm uses a stack?", "options": ["BFS", "Dijkstra", "DFS", "Prim"], "correct": 2, "explanationRight": "Correct! DFS uses a stack for backtracking.", "explanationWrong": "BFS uses a queue." },
+      { "question": "In a Linked List implementation of a Stack, where should push/pop happen?", "options": ["Tail", "Head", "Middle", "Random"], "correct": 1, "explanationRight": "Correct! Head allows O(1) time complexity.", "explanationWrong": "Tail would require O(n) unless you have a tail pointer." },
+      { "question": "What is the result of '2 3 + 5 *' in Postfix?", "options": ["10", "13", "25", "15"], "correct": 2, "explanationRight": "Correct! (2+3) * 5 = 25.", "explanationWrong": "Incorrect. 2+3=5, then 5*5=25." },
+      { "question": "Can a stack be used to reverse a string?", "options": ["Yes", "No"], "correct": 0, "explanationRight": "Yes! Push all chars and pop them back.", "explanationWrong": "Actually, it's one of the simplest uses of a stack." },
+      { "question": "What is the 'peek' operation?", "options": ["Remove top", "Add to top", "View top without removing", "Check if empty"], "correct": 2, "explanationRight": "Correct! Peek only observes the top.", "explanationWrong": "Incorrect. Pop removes, Peek just looks." },
+      { "question": "What is 'Infix' notation?", "options": ["Operator before operands", "Operator after operands", "Operator between operands", "No operators"], "correct": 2, "explanationRight": "Correct! Like (A + B).", "explanationWrong": "Incorrect. Operator between is Infix." },
+      { "question": "Which of these is a real-world stack example?", "options": ["Line at a bank", "Undo history in Word", "Printer task list", "Keyboard buffer"], "correct": 1, "explanationRight": "Correct! Undo/Redo is a classic stack.", "explanationWrong": "Banks and printers use Queues." },
+      { "question": "What is the space complexity of a stack with N elements?", "options": ["O(1)", "O(log N)", "O(N)", "O(N^2)"], "correct": 2, "explanationRight": "Correct! It stores N items.", "explanationWrong": "Incorrect. It scales linearly with data." }
+    ]
+  },
+  "2": {
+    "title": "Queue",
+    "popup": [
+      { "question": "Which principle does a Queue follow?", "options": ["LIFO", "FIFO", "FILO", "Random"], "correct": 1 },
+      { "question": "What is the operation to add an element?", "options": ["Push", "Pop", "Enqueue", "Dequeue"], "correct": 2 },
+      { "question": "What is the operation to remove an element?", "options": ["Push", "Pop", "Enqueue", "Dequeue"], "correct": 3 },
+      { "question": "Where are elements added in a Queue?", "options": ["Front", "Rear", "Middle", "Top"], "correct": 1 },
+      { "question": "Where are elements removed in a Queue?", "options": ["Front", "Rear", "Middle", "Bottom"], "correct": 0 }
+    ],
+    "concept": [
+      { "question": "What is a Circular Queue used for?", "options": ["Infinite storage", "Efficient memory reuse", "Sorting", "Encryption"], "correct": 1, "explanationRight": "Correct! It avoids 'waste' at the front of arrays.", "explanationWrong": "Incorrect. It's for memory efficiency." },
+      { "question": "What is the time complexity of Dequeue in a simple array queue (without shifts)?", "options": ["O(1)", "O(n)", "O(log n)", "O(n^2)"], "correct": 0, "explanationRight": "Correct! If you just move the front pointer.", "explanationWrong": "Incorrect. If you don't shift elements, it's O(1)." },
+      { "question": "Which algorithm uses a Queue?", "options": ["DFS", "BFS", "Quick Sort", "Binary Search"], "correct": 1, "explanationRight": "Correct! BFS uses a queue for level-order traversal.", "explanationWrong": "DFS uses a stack." },
+      { "question": "What is a Priority Queue?", "options": ["A queue that is faster", "A queue where elements have values", "A queue where elements have priority levels", "A sorted list"], "correct": 2, "explanationRight": "Correct! Higher priority elements are served first.", "explanationWrong": "Incorrect. Priority determines order, not speed." },
+      { "question": "What is a Deque?", "options": ["A queue with one end", "Double Ended Queue", "A deleted queue", "A recursive queue"], "correct": 1, "explanationRight": "Correct! Insertion/Deletion at both ends.", "explanationWrong": "Incorrect. It stands for Double Ended Queue." },
+      { "question": "In a Producer-Consumer problem, which DS is used?", "options": ["Stack", "Queue", "Tree", "Graph"], "correct": 1, "explanationRight": "Correct! A queue acts as a buffer.", "explanationWrong": "Incorrect. Queues maintain the order of tasks." },
+      { "question": "What happens in 'Queue Underflow'?", "options": ["Queue is full", "Queue is empty", "Memory is low", "Data is lost"], "correct": 1, "explanationRight": "Correct! Trying to dequeue from an empty queue.", "explanationWrong": "Incorrect. Underflow means empty." },
+      { "question": "Which of these is a Queue application?", "options": ["Call Stack", "CPU Scheduling", "Undo function", "Tower of Hanoi"], "correct": 1, "explanationRight": "Correct! OS schedules tasks in queues.", "explanationWrong": "Undo and Hanoi use Stacks." },
+      { "question": "How many queues are needed to implement a Stack?", "options": ["One", "Two", "Three", "Four"], "correct": 1, "explanationRight": "Correct! Two queues can simulate LIFO.", "explanationWrong": "Incorrect. One isn't enough to reverse order." },
+      { "question": "What is the space complexity of a Queue with N elements?", "options": ["O(1)", "O(N)", "O(log N)", "O(N^2)"], "correct": 1, "explanationRight": "Correct! Linear space.", "explanationWrong": "Incorrect. It scales with input size." }
+    ]
+  },
+  "3": {
+    "title": "Linked List",
+    "popup": [
+      { "question": "What does a Node in a Linked List contain?", "options": ["Data only", "Pointer only", "Data and Pointer", "Nothing"], "correct": 2 },
+      { "question": "What is the first node called?", "options": ["Tail", "Head", "Root", "Start"], "correct": 1 },
+      { "question": "What does the last node's pointer point to?", "options": ["Head", "Itself", "NULL", "Previous"], "correct": 2 },
+      { "question": "What is the time complexity of searching in a Linked List?", "options": ["O(1)", "O(log n)", "O(n)", "O(n^2)"], "correct": 2 },
+      { "question": "Which Linked List has a pointer to the previous node?", "options": ["Singly", "Doubly", "Circular", "None"], "correct": 1 }
+    ],
+    "concept": [
+      { "question": "Why is insertion in the middle faster in Linked List than Array?", "options": ["No shifting required", "Memory is faster", "Pointers are magic", "It is not faster"], "correct": 0, "explanationRight": "Correct! You just update two pointers.", "explanationWrong": "Arrays require shifting O(N) elements." },
+      { "question": "What is a Circular Linked List?", "options": ["List in a circle", "Last node points to Head", "Head points to Tail", "List with loops"], "correct": 1, "explanationRight": "Correct! It forms a continuous loop.", "explanationWrong": "Incorrect. Last node to Head is the definition." },
+      { "question": "How do you detect a cycle in a Linked List?", "options": ["Binary Search", "Floyd's Cycle-Finding (Tortoise and Hare)", "DFS", "Counting nodes"], "correct": 1, "explanationRight": "Correct! Two pointers at different speeds.", "explanationWrong": "Incorrect. Floyd's algorithm is the standard." },
+      { "question": "What is the disadvantage of a Linked List?", "options": ["Fixed size", "No random access", "Slow insertion", "Memory usage"], "correct": 1, "explanationRight": "Correct! You must traverse from Head.", "explanationWrong": "Incorrect. Linked Lists have dynamic size." },
+      { "question": "In a Doubly Linked List, how many pointers per node?", "options": ["1", "2", "3", "0"], "correct": 1, "explanationRight": "Correct! Next and Prev.", "explanationWrong": "Incorrect. Doubly means two." },
+      { "question": "What is the time complexity to insert at the Head?", "options": ["O(1)", "O(n)", "O(log n)", "O(1)"], "correct": 0, "explanationRight": "Correct! Constant time.", "explanationWrong": "Incorrect. Inserting at Head is immediate." },
+      { "question": "Linked Lists are stored in which memory area?", "options": ["Stack", "Heap", "Cache", "Register"], "correct": 1, "explanationRight": "Correct! Dynamic memory is on the Heap.", "explanationWrong": "Incorrect. Local variables are on Stack, Nodes are on Heap." },
+      { "question": "Which operation is O(1) in a Singly Linked List with a Tail pointer?", "options": ["Delete Tail", "Insert at Tail", "Delete middle", "Search"], "correct": 1, "explanationRight": "Correct! Just update the tail pointer.", "explanationWrong": "Deleting Tail still requires finding the node before it O(n)." },
+      { "question": "Can you traverse a Singly Linked List backwards?", "options": ["Yes", "No"], "correct": 1, "explanationRight": "Correct! Only Doubly can do that.", "explanationWrong": "Incorrect. Singly only goes forward." },
+      { "question": "What is a 'Dummy Node' used for?", "options": ["Storing trash", "Simplifying edge cases", "Encryption", "Saving memory"], "correct": 1, "explanationRight": "Correct! It handles empty list logic easily.", "explanationWrong": "Incorrect. It simplifies Head/Tail insertion logic." }
+    ]
+  },
+  "4": {
+    "title": "Binary Tree",
+    "popup": [
+      { "question": "How many children can a node in a Binary Tree have?", "options": ["0, 1, or 2", "Exactly 2", "At least 1", "Any number"], "correct": 0 },
+      { "question": "What is the top node called?", "options": ["Base", "Leaf", "Root", "Apex"], "correct": 2 },
+      { "question": "What are nodes with no children called?", "options": ["Stems", "Leaves", "Roots", "Branches"], "correct": 1 },
+      { "question": "In a BST, left child is always?", "options": ["Greater than parent", "Smaller than parent", "Equal to parent", "Random"], "correct": 1 },
+      { "question": "In a BST, right child is always?", "options": ["Greater than parent", "Smaller than parent", "Equal to parent", "Random"], "correct": 0 }
+    ],
+    "concept": [
+      { "question": "What is the height of a balanced Binary Tree with N nodes?", "options": ["O(N)", "O(log N)", "O(N^2)", "O(1)"], "correct": 1, "explanationRight": "Correct! Logarithmic height is the goal.", "explanationWrong": "Incorrect. Balanced trees are O(log N)." },
+      { "question": "Which traversal visits nodes in non-decreasing order in a BST?", "options": ["Pre-order", "In-order", "Post-order", "Level-order"], "correct": 1, "explanationRight": "Correct! In-order traversal gives sorted output.", "explanationWrong": "Incorrect. In-order is the magic for BST." },
+      { "question": "What is a Full Binary Tree?", "options": ["All levels full", "Every node has 0 or 2 children", "Max height", "No leaves"], "correct": 1, "explanationRight": "Correct! No node has only one child.", "explanationWrong": "Incorrect. That's a Complete or Perfect tree definition mismatch." },
+      { "question": "What is a Complete Binary Tree?", "options": ["All levels full except maybe last", "Every node has 2 children", "Sorted tree", "Max 5 nodes"], "correct": 0, "explanationRight": "Correct! Filled from left to right.", "explanationWrong": "Incorrect. Complete trees can have a partially filled last level." },
+      { "question": "Time complexity of search in a skewed BST?", "options": ["O(log n)", "O(1)", "O(n)", "O(n log n)"], "correct": 2, "explanationRight": "Correct! It becomes a Linked List.", "explanationWrong": "Incorrect. Skewed means no balance, so O(n)." },
+      { "question": "What is AVL Tree?", "options": ["A tree with 3 nodes", "Self-balancing BST", "Array-based tree", "A type of graph"], "correct": 1, "explanationRight": "Correct! It uses rotations to stay balanced.", "explanationWrong": "Incorrect. AVL is self-balancing." },
+      { "question": "Which traversal is used for deleting a tree?", "options": ["Pre-order", "In-order", "Post-order", "Random"], "correct": 2, "explanationRight": "Correct! Delete children before parents.", "explanationWrong": "Incorrect. Post-order is safest for deletion." },
+      { "question": "In an array representation of a binary tree, if parent is at 'i', left child is at?", "options": ["i+1", "2i", "2i+1", "i/2"], "correct": 2, "explanationRight": "Correct! (using 0-based indexing: 2i+1).", "explanationWrong": "Incorrect. Standard formula is 2i+1." },
+      { "question": "How many null pointers in a Binary Tree with N nodes?", "options": ["N", "N+1", "2N", "Log N"], "correct": 1, "explanationRight": "Correct! Mathematical property.", "explanationWrong": "Incorrect. It is exactly N+1." },
+      { "question": "What is a Breadth-First Search in a tree called?", "options": ["Depth Search", "Level Order Traversal", "Recursive Search", "Staged Search"], "correct": 1, "explanationRight": "Correct! Visiting level by level.", "explanationWrong": "Incorrect. Level Order is BFS for trees." }
+    ]
+  },
+  "5": {
+    "title": "Graph",
+    "popup": [
+      { "question": "What are the connections between nodes called?", "options": ["Links", "Paths", "Edges", "Wires"], "correct": 2 },
+      { "question": "A graph with directed edges is called?", "options": ["Undirected", "Digraph", "Multigraph", "Simple"], "correct": 1 },
+      { "question": "Which DS is commonly used for BFS?", "options": ["Stack", "Queue", "Tree", "Array"], "correct": 1 },
+      { "question": "Which DS is commonly used for DFS?", "options": ["Stack", "Queue", "Tree", "Array"], "correct": 0 },
+      { "question": "What is a 'Cycle' in a graph?", "options": ["A path from a node back to itself", "A broken edge", "A group of nodes", "A wheel"], "correct": 0 }
+    ],
+    "concept": [
+      { "question": "What is an Adjacency Matrix?", "options": ["List of edges", "2D array representing edges", "Linked list of nodes", "A type of graph"], "correct": 1, "explanationRight": "Correct! Good for dense graphs.", "explanationWrong": "Incorrect. Matrix is the 2D array representation." },
+      { "question": "What is the time complexity of Dijkstra's algorithm?", "options": ["O(V+E)", "O(E log V)", "O(V^2)", "O(N)"], "correct": 1, "explanationRight": "Correct! Using a priority queue.", "explanationWrong": "Incorrect. E log V is the standard with Min-Heaps." },
+      { "question": "Which algorithm finds the Minimum Spanning Tree?", "options": ["Dijkstra", "Kruskal", "A*", "Bellman-Ford"], "correct": 1, "explanationRight": "Correct! Kruskal and Prim are MST algorithms.", "explanationWrong": "Incorrect. Dijkstra is for shortest paths." },
+      { "question": "What is a 'DAG'?", "options": ["Daily Active Graph", "Directed Acyclic Graph", "Direct Array Group", "Data Analysis Graph"], "correct": 1, "explanationRight": "Correct! Directed with no cycles.", "explanationWrong": "Incorrect. Directed Acyclic Graph." },
+      { "question": "What is Topological Sort used for?", "options": ["Sorting numbers", "Scheduling tasks with dependencies", "Finding cycles", "Shortest path"], "correct": 1, "explanationRight": "Correct! Essential for build systems.", "explanationWrong": "Incorrect. It's for dependency resolution." },
+      { "question": "Which algorithm detects negative cycles?", "options": ["Dijkstra", "Bellman-Ford", "BFS", "Kruskal"], "correct": 1, "explanationRight": "Correct! Dijkstra fails with negative weights.", "explanationWrong": "Incorrect. Bellman-Ford can handle negative weights." },
+      { "question": "Adjacency List is better for which type of graph?", "options": ["Dense", "Sparse", "Complete", "Small"], "correct": 1, "explanationRight": "Correct! Saves space on sparse graphs.", "explanationWrong": "Incorrect. Sparse graphs use Lists; Dense use Matrices." },
+      { "question": "What is 'Degree' of a vertex?", "options": ["Its temperature", "Number of connected edges", "Its level in tree", "Its ID"], "correct": 1, "explanationRight": "Correct! Incoming/Outgoing edges.", "explanationWrong": "Incorrect. Degree is the count of edges." },
+      { "question": "Is a Tree a type of Graph?", "options": ["Yes", "No"], "correct": 0, "explanationRight": "Correct! A tree is a connected acyclic graph.", "explanationWrong": "Actually, every tree is a graph." },
+      { "question": "What is a Bipartite Graph?", "options": ["Graph with 2 nodes", "Vertices can be divided into 2 independent sets", "Graph with 2 cycles", "Graph with dual edges"], "correct": 1, "explanationRight": "Correct! No edges between vertices in the same set.", "explanationWrong": "Incorrect. It's about set division." }
+    ]
+  },
+  "6": {
+    "title": "Dynamic Programming",
+    "popup": [
+      { "question": "What is the core idea of DP?", "options": ["Recursion only", "Storing subproblem results", "Random guessing", "Sorting data"], "correct": 1 },
+      { "question": "What is 'Memoization'?", "options": ["Memorizing code", "Top-down approach", "Bottom-up approach", "Deleting data"], "correct": 1 },
+      { "question": "What is 'Tabulation'?", "options": ["Top-down", "Bottom-up", "Recursive", "Formatting tables"], "correct": 1 },
+      { "question": "Which problem is a classic DP example?", "options": ["Binary Search", "Fibonacci", "Bubble Sort", "Hello World"], "correct": 1 },
+      { "question": "DP is used when there are?", "options": ["Overlapping subproblems", "No subproblems", "Only one step", "Sorted inputs"], "correct": 0 }
+    ],
+    "concept": [
+      { "question": "What is the 'Optimal Substructure' property?", "options": ["The code is clean", "Solution to problem contains solutions to subproblems", "The structure is a tree", "It uses O(1) space"], "correct": 1, "explanationRight": "Correct! Essential for DP and Greedy.", "explanationWrong": "Incorrect. It means solving small parts helps solve the big part." },
+      { "question": "Which approach uses a table (2D/1D array) to store results?", "options": ["Memoization", "Tabulation", "Greedy", "Backtracking"], "correct": 1, "explanationRight": "Correct! Tabulation builds the table iteratively.", "explanationWrong": "Incorrect. Tabulation is bottom-up table building." },
+      { "question": "What is the time complexity of DP Fibonacci?", "options": ["O(2^n)", "O(n)", "O(log n)", "O(n^2)"], "correct": 1, "explanationRight": "Correct! From exponential to linear.", "explanationWrong": "Incorrect. Memoized/Tabulated Fibonacci is O(n)." },
+      { "question": "0/1 Knapsack problem is solved by?", "options": ["Greedy", "DP", "Divide & Conquer", "Binary Search"], "correct": 1, "explanationRight": "Correct! Greedy fails for 0/1 version.", "explanationWrong": "Incorrect. Greedy only works for Fractional Knapsack." },
+      { "question": "Longest Common Subsequence (LCS) uses?", "options": ["1D DP", "2D DP", "Bitmask DP", "No DP"], "correct": 1, "explanationRight": "Correct! Typically a grid comparison.", "explanationWrong": "Incorrect. LCS is a classic 2D DP problem." },
+      { "question": "Difference between DP and Divide & Conquer?", "options": ["DP has overlapping subproblems", "D&C has overlapping subproblems", "No difference", "DP is slower"], "correct": 0, "explanationRight": "Correct! D&C subproblems are independent.", "explanationWrong": "Incorrect. Overlapping subproblems is the key for DP." },
+      { "question": "What is Bitmask DP used for?", "options": ["Small sets / permutations", "Large arrays", "Strings", "Graphs"], "correct": 0, "explanationRight": "Correct! Like Traveling Salesperson Problem.", "explanationWrong": "Incorrect. It handles exponential states over small sets." },
+      { "question": "Can every recursive problem be optimized with DP?", "options": ["Yes", "Only if it has overlapping subproblems", "No", "Only if it's sorting"], "correct": 1, "explanationRight": "Correct! If subproblems don't repeat, DP doesn't help.", "explanationWrong": "Incorrect. DP requires overlapping subproblems." },
+      { "question": "Coin Change problem can be solved by?", "options": ["DP only", "Greedy only", "Both (depending on coin set)", "None"], "correct": 2, "explanationRight": "Correct! Standard coin sets allow Greedy, but others require DP.", "explanationWrong": "Incorrect. It depends on the denominations." },
+      { "question": "What is the space complexity of 0/1 Knapsack (basic)?", "options": ["O(N)", "O(N*W)", "O(W)", "O(1)"], "correct": 1, "explanationRight": "Correct! Matrix of Items vs Weight.", "explanationWrong": "Incorrect. Basic implementation is O(N*W)." }
+    ]
+  },
+  "7": {
+    "title": "Backtracking",
+    "popup": [
+      { "question": "What is Backtracking?", "options": ["Going forward only", "Trial and error with undoing", "Sorting data", "Searching a list"], "correct": 1 },
+      { "question": "Which of these is a Backtracking problem?", "options": ["Binary Search", "N-Queens", "Bubble Sort", "Merge Sort"], "correct": 1 },
+      { "question": "Backtracking is essentially?", "options": ["BFS", "DFS with pruning", "Binary Search", "Greedy"], "correct": 1 },
+      { "question": "What do we do when we hit a dead end?", "options": ["Stop", "Restart", "Backtrack (Undo)", "Wait"], "correct": 2 },
+      { "question": "A State-Space Tree represents?", "options": ["All possible moves", "Only correct moves", "The result", "The data"], "correct": 0 }
+    ],
+    "concept": [
+      { "question": "What is 'Pruning'?", "options": ["Adding nodes", "Cutting off branches that can't lead to a solution", "Renaming variables", "Clearing memory"], "correct": 1, "explanationRight": "Correct! It drastically improves performance.", "explanationWrong": "Incorrect. Pruning is avoiding unnecessary work." },
+      { "question": "N-Queens problem: Can two queens be in the same row?", "options": ["Yes", "No"], "correct": 1, "explanationRight": "Correct! They would attack each other.", "explanationWrong": "Incorrect. The rule is no same row, column, or diagonal." },
+      { "question": "Sudoku Solver uses which technique?", "options": ["Greedy", "Backtracking", "D&C", "BFS"], "correct": 1, "explanationRight": "Correct! Fill a cell, backtrack if it fails.", "explanationWrong": "Incorrect. Sudoku is a classic backtracking problem." },
+      { "question": "Complexity of N-Queens is roughly?", "options": ["O(N)", "O(N^2)", "O(N!)", "O(log N)"], "correct": 2, "explanationRight": "Correct! Factorial search space.", "explanationWrong": "Incorrect. It's exponential/factorial." },
+      { "question": "What is the 'Base Case' in backtracking recursion?", "options": ["First move", "A valid solution found or no moves left", "An error", "The root node"], "correct": 1, "explanationRight": "Correct! When the puzzle is complete.", "explanationWrong": "Incorrect. Base case is the termination condition." },
+      { "question": "Backtracking vs Exhaustive Search?", "options": ["They are the same", "Backtracking prunes", "Exhaustive is faster", "Backtracking is random"], "correct": 1, "explanationRight": "Correct! Backtracking avoids checking every single leaf.", "explanationWrong": "Incorrect. Backtracking is smarter than pure brute force." },
+      { "question": "Rat in a Maze is solved by?", "options": ["Sorting", "Backtracking", "Greedy", "Binary Search"], "correct": 1, "explanationRight": "Correct! Explore paths, backtrack if blocked.", "explanationWrong": "Incorrect. It's a pathfinding backtracking problem." },
+      { "question": "Can backtracking find all solutions?", "options": ["Yes", "No", "Only the first one", "Only the last one"], "correct": 0, "explanationRight": "Correct! You can continue after finding one.", "explanationWrong": "Incorrect. It can explore the entire state space." },
+      { "question": "What is 'Constraint Satisfaction'?", "options": ["Speed of code", "Rules that moves must follow", "User satisfaction", "Memory limits"], "correct": 1, "explanationRight": "Correct! Like 'no queens attacking'.", "explanationWrong": "Incorrect. It refers to the problem rules." },
+      { "question": "Which DS is used to track the path during backtracking recursion?", "options": ["Queue", "Implicit Stack (Recursion)", "Matrix", "Linked List"], "correct": 1, "explanationRight": "Correct! The call stack handles the state.", "explanationWrong": "Incorrect. Recursion uses a stack." }
+    ]
+  },
+  "8": {
+    "title": "Divide & Conquer",
+    "popup": [
+      { "question": "What is the first step in D&C?", "options": ["Combine", "Divide", "Conquer", "Sort"], "correct": 1 },
+      { "question": "Which sorting algorithm uses D&C?", "options": ["Bubble Sort", "Merge Sort", "Insertion Sort", "Selection Sort"], "correct": 1 },
+      { "question": "Binary Search is which type of algorithm?", "options": ["DP", "Greedy", "Divide & Conquer", "Backtracking"], "correct": 2 },
+      { "question": "What is 'Conquer' in D&C?", "options": ["Fighting a boss", "Solving small subproblems", "Merging results", "Splitting arrays"], "correct": 1 },
+      { "question": "Merging two sorted arrays takes?", "options": ["O(1)", "O(n)", "O(log n)", "O(n^2)"], "correct": 1 }
+    ],
+    "concept": [
+      { "question": "What is the Master Theorem used for?", "options": ["Sorting", "Solving recurrence relations", "Graph search", "Security"], "correct": 1, "explanationRight": "Correct! It defines T(n) complexity.", "explanationWrong": "Incorrect. It's for analyzing D&C recursion." },
+      { "question": "Merge Sort vs Quick Sort?", "options": ["Quick is always stable", "Merge is always stable", "They are the same", "Both are O(n)"], "correct": 1, "explanationRight": "Correct! Merge sort preserves relative order.", "explanationWrong": "Incorrect. Quick sort is typically unstable." },
+      { "question": "Worst case complexity of Quick Sort?", "options": ["O(n log n)", "O(n)", "O(n^2)", "O(log n)"], "correct": 2, "explanationRight": "Correct! When the pivot is bad.", "explanationWrong": "Incorrect. Worst case is quadratic." },
+      { "question": "Best case of Binary Search?", "options": ["O(1)", "O(n)", "O(log n)", "O(n^2)"], "correct": 0, "explanationRight": "Correct! Found at the middle immediately.", "explanationWrong": "Incorrect. Best case is constant." },
+      { "question": "Is Merge Sort in-place?", "options": ["Yes", "No"], "correct": 1, "explanationRight": "Correct! It needs extra space for merging.", "explanationWrong": "Incorrect. It requires O(N) extra space." },
+      { "question": "D&C subproblems are usually?", "options": ["Overlapping", "Independent", "Recursive only", "Small"], "correct": 1, "explanationRight": "Correct! This is how they differ from DP.", "explanationWrong": "Incorrect. D&C subproblems don't overlap." },
+      { "question": "Strassen's Algorithm is for?", "options": ["Sorting", "Matrix Multiplication", "Graph Search", "Prime numbers"], "correct": 1, "explanationRight": "Correct! Faster than standard O(n^3).", "explanationWrong": "Incorrect. It's a matrix D&C algorithm." },
+      { "question": "Recurrence for Merge Sort is?", "options": ["2T(n/2) + n", "T(n-1) + n", "T(n/2) + 1", "2T(n/2) + 1"], "correct": 0, "explanationRight": "Correct! Two splits plus linear merge.", "explanationWrong": "Incorrect. Standard is 2T(n/2) + n." },
+      { "question": "Quick Sort average complexity?", "options": ["O(n)", "O(n log n)", "O(n^2)", "O(log n)"], "correct": 1, "explanationRight": "Correct! Very fast in practice.", "explanationWrong": "Incorrect. Average is O(n log n)." },
+      { "question": "Why is D&C good for parallelism?", "options": ["It isn't", "Subproblems can be solved on different cores simultaneously", "It uses less memory", "It's newer"], "correct": 1, "explanationRight": "Correct! Independent tasks are parallel-friendly.", "explanationWrong": "Incorrect. Multi-core systems love D&C." }
+    ]
+  },
+  "9": {
+    "title": "Greedy Algorithms",
+    "popup": [
+      { "question": "What is the Greedy approach?", "options": ["Always look ahead", "Make the locally optimal choice now", "Try everything", "Wait for data"], "correct": 1 },
+      { "question": "Which algorithm is Greedy?", "options": ["Merge Sort", "Prim's Algorithm", "Binary Search", "N-Queens"], "correct": 1 },
+      { "question": "Greedy algorithms always find the global optimum?", "options": ["Yes", "No", "Only for sorting", "Only for graphs"], "correct": 1 },
+      { "question": "Which coin change set works with Greedy?", "options": ["{1, 3, 4}", "{1, 5, 10, 25}", "{2, 5, 7}", "None"], "correct": 1 },
+      { "question": "Greedy is generally?", "options": ["Faster than DP", "Slower than DP", "More accurate than DP", "Random"], "correct": 0 }
+    ],
+    "concept": [
+      { "question": "What is the 'Greedy Choice Property'?", "options": ["A greedy choice leads to global optimum", "The code is short", "It uses a queue", "It reverses data"], "correct": 0, "explanationRight": "Correct! Fundamental for proving a greedy solution works.", "explanationWrong": "Incorrect. It means local best = global best." },
+      { "question": "Dijkstra's is a Greedy algorithm because?", "options": ["It uses a stack", "It picks the closest vertex next", "It checks all paths", "It's named after a person"], "correct": 1, "explanationRight": "Correct! Local best distance is picked.", "explanationWrong": "Incorrect. Picking the minimum distance next is Greedy." },
+      { "question": "Huffman Coding uses Greedy for?", "options": ["Encryption", "Data Compression", "Sorting", "Hashing"], "correct": 1, "explanationRight": "Correct! Building optimal prefix trees.", "explanationWrong": "Incorrect. It's for lossless compression." },
+      { "question": "Fractional Knapsack vs 0/1 Knapsack?", "options": ["Greedy works for both", "Greedy only for Fractional", "Greedy only for 0/1", "Greedy for neither"], "correct": 1, "explanationRight": "Correct! You can take parts of items.", "explanationWrong": "Incorrect. 0/1 Knapsack requires DP." },
+      { "question": "Kruskal's algorithm finds MST by?", "options": ["Growing a tree", "Picking the smallest available edge (no cycles)", "DFS", "BFS"], "correct": 1, "explanationRight": "Correct! Smallest edge first is Greedy.", "explanationWrong": "Incorrect. It greedily adds edges." },
+      { "question": "Does Greedy always find the shortest path in any graph?", "options": ["Yes", "Only if weights are non-negative", "No", "Only if graph is a tree"], "correct": 1, "explanationRight": "Correct! Dijkstra (Greedy) requires non-negative weights.", "explanationWrong": "Incorrect. Negative weights break the greedy assumption." },
+      { "question": "Greedy for Activity Selection: Sort by?", "options": ["Start time", "Finish time", "Duration", "Random"], "correct": 1, "explanationRight": "Correct! Picking earliest finish allows more tasks.", "explanationWrong": "Incorrect. Finishing earliest is the greedy strategy." },
+      { "question": "Space complexity of Greedy algorithms is usually?", "options": ["O(N^2)", "O(N)", "O(1)", "O(log N)"], "correct": 1, "explanationRight": "Correct! Usually just needs to store the input and current state.", "explanationWrong": "Incorrect. Typically O(N) or even O(1)." },
+      { "question": "A Greedy algorithm is also known as a?", "options": ["Short-sighted algorithm", "Global algorithm", "Wise algorithm", "Recursive algorithm"], "correct": 0, "explanationRight": "Correct! It doesn't reconsider past choices.", "explanationWrong": "Incorrect. It's 'short-sighted' because it only looks at the now." },
+      { "question": "Prim's vs Kruskal's?", "options": ["Prim is Greedy, Kruskal is DP", "Both are Greedy", "Prim is D&C", "Kruskal is BFS"], "correct": 1, "explanationRight": "Correct! Both greedily build an MST.", "explanationWrong": "Incorrect. Both use greedy strategies." }
+    ]
+  },
+  "10": {
+    "title": "Sorting",
+    "popup": [
+      { "question": "Complexity of Bubble Sort?", "options": ["O(n log n)", "O(n^2)", "O(n)", "O(1)"], "correct": 1 },
+      { "question": "Is Merge Sort stable?", "options": ["Yes", "No"], "correct": 0 },
+      { "question": "Quick Sort average complexity?", "options": ["O(n^2)", "O(n log n)", "O(n)", "O(log n)"], "correct": 1 },
+      { "question": "Which sort is best for nearly sorted data?", "options": ["Quick Sort", "Insertion Sort", "Selection Sort", "Merge Sort"], "correct": 1 },
+      { "question": "Selection Sort finds the?", "options": ["Maximum", "Minimum", "Middle", "Random"], "correct": 1 }
+    ],
+    "concept": [
+      { "question": "What is a 'Stable' sort?", "options": ["It doesn't crash", "Maintains relative order of equal elements", "It is O(n log n)", "Uses O(1) space"], "correct": 1, "explanationRight": "Correct! Important for multi-key sorting.", "explanationWrong": "Incorrect. Stability is about relative order." },
+      { "question": "Which sorting is in-place and O(n log n)?", "options": ["Merge Sort", "Heap Sort", "Bubble Sort", "Radix Sort"], "correct": 1, "explanationRight": "Correct! Unlike Merge Sort, it doesn't need extra arrays.", "explanationWrong": "Incorrect. Merge Sort is NOT in-place." },
+      { "question": "Counting Sort complexity?", "options": ["O(n log n)", "O(n^2)", "O(n + k)", "O(k^2)"], "correct": 2, "explanationRight": "Correct! Linear time when range k is small.", "explanationWrong": "Incorrect. It's a non-comparison sort: O(n+k)." },
+      { "question": "Worst case of Insertion Sort?", "options": ["O(n)", "O(n log n)", "O(n^2)", "O(1)"], "correct": 2, "explanationRight": "Correct! When data is sorted backwards.", "explanationWrong": "Incorrect. It's quadratic in the worst case." },
+      { "question": "Which sorting algorithm is used by Array.sort() in V8 (Chrome)?", "options": ["Quick Sort", "Merge Sort", "Timsort", "Bubble Sort"], "correct": 2, "explanationRight": "Correct! Hybrid of Merge and Insertion Sort.", "explanationWrong": "Incorrect. Timsort is the standard for real engines." },
+      { "question": "Internal vs External Sorting?", "options": ["One is inside a function", "External is for data that doesn't fit in RAM", "Internal uses only stacks", "No difference"], "correct": 1, "explanationRight": "Correct! External sorting uses disk storage.", "explanationWrong": "Incorrect. External is for massive data (disk)." },
+      { "question": "Selection Sort always takes O(n^2)?", "options": ["Yes", "No, O(n) for sorted", "No, O(n log n)", "Only if random"], "correct": 0, "explanationRight": "Correct! It doesn't care if data is sorted.", "explanationWrong": "Incorrect. It always scans the whole remaining array." },
+      { "question": "Lower bound of comparison-based sorting?", "options": ["O(n)", "O(n log n)", "O(log n)", "O(n!)"], "correct": 1, "explanationRight": "Correct! Mathematically proven.", "explanationWrong": "Incorrect. O(n log n) is the limit." },
+      { "question": "What is a 'Pass' in Bubble Sort?", "options": ["One swap", "One full scan of the array", "One correct element", "The whole sort"], "correct": 1, "explanationRight": "Correct! Bubbles one element to the end.", "explanationWrong": "Incorrect. A pass is one full inner-loop traversal." },
+      { "question": "Which sort uses 'Partitioning'?", "options": ["Merge Sort", "Quick Sort", "Heap Sort", "Shell Sort"], "correct": 1, "explanationRight": "Correct! Pivot and Partition is the Quick Sort way.", "explanationWrong": "Incorrect. Partitioning is for Quick Sort." }
+    ]
+  },
+  "11": {
+    "title": "Recursion",
+    "popup": [
+      { "question": "What is Recursion?", "options": ["Looping with for", "Function calling itself", "Sorting data", "Global variables"], "correct": 1 },
+      { "question": "What is the 'Base Case'?", "options": ["The starting point", "The stopping condition", "The error", "The data structure"], "correct": 1 },
+      { "question": "What happens without a base case?", "options": ["Code runs faster", "Stack Overflow", "Binary Search", "Nothing"], "correct": 1 },
+      { "question": "Recursive function for Factorial N is?", "options": ["N + fact(N-1)", "N * fact(N-1)", "fact(N)", "N-1"], "correct": 1 },
+      { "question": "Tower of Hanoi is solved by?", "options": ["Loops", "Recursion", "Queues", "Sorting"], "correct": 1 }
+    ],
+    "concept": [
+      { "question": "What is Tail Recursion?", "options": ["Recursion at the start", "Recursive call is the last action", "Recursion with tails", "Slow recursion"], "correct": 1, "explanationRight": "Correct! Can be optimized by compilers into loops.", "explanationWrong": "Incorrect. Tail recursion is when no work is left after the call." },
+      { "question": "Space complexity of recursion depends on?", "options": ["Input size", "Depth of recursion (Stack frames)", "Variable count", "CPU speed"], "correct": 1, "explanationRight": "Correct! Every call adds a frame to the stack.", "explanationWrong": "Incorrect. It's the maximum depth of the call stack." },
+      { "question": "What is Indirect Recursion?", "options": ["Function calls itself", "A calls B, B calls A", "Recursion in a loop", "Random calls"], "correct": 1, "explanationRight": "Correct! A chain of functions calling each other back.", "explanationWrong": "Incorrect. Indirect involves multiple functions." },
+      { "question": "Recursion vs Iteration?", "options": ["Recursion always faster", "Iteration always faster", "Recursion uses more stack space", "Iteration uses more stack space"], "correct": 2, "explanationRight": "Correct! Frames take memory.", "explanationWrong": "Incorrect. Recursion has overhead from stack frames." },
+      { "question": "Tower of Hanoi with 3 disks takes how many moves?", "options": ["3", "7", "8", "15"], "correct": 1, "explanationRight": "Correct! 2^3 - 1 = 7.", "explanationWrong": "Incorrect. Formula is 2^n - 1." },
+      { "question": "Which data structure is used internally by Recursion?", "options": ["Queue", "Stack", "Tree", "Linked List"], "correct": 1, "explanationRight": "Correct! The System Call Stack.", "explanationWrong": "Incorrect. Recursion relies on a Stack." },
+      { "question": "Can every recursive function be written iteratively?", "options": ["Yes", "No"], "correct": 0, "explanationRight": "Correct! Using your own stack or loops.", "explanationWrong": "Actually, yes. Church-Turing thesis implies it." },
+      { "question": "What is the time complexity of recursive Fibonacci (no DP)?", "options": ["O(n)", "O(2^n)", "O(log n)", "O(n^2)"], "correct": 1, "explanationRight": "Correct! Exponential due to redundant calls.", "explanationWrong": "Incorrect. It's O(2^n) without memoization." },
+      { "question": "What is 'Head Recursion'?", "options": ["Recursion is the first action", "Recursion in the head", "First element of list", "Optimized recursion"], "correct": 0, "explanationRight": "Correct! Call happens before any work in the function.", "explanationWrong": "Incorrect. Head recursion call comes first." },
+      { "question": "Tree Traversal is most naturally implemented with?", "options": ["Loops", "Recursion", "Queues", "Stacks"], "correct": 1, "explanationRight": "Correct! Trees are recursive by nature.", "explanationWrong": "Incorrect. Recursion fits tree structures perfectly." }
+    ]
+  }
+}

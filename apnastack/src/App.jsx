@@ -1,6 +1,6 @@
 import { Suspense, useEffect, useRef, useState } from 'react'
 import { Canvas, useThree } from '@react-three/fiber'
-import { Preload } from '@react-three/drei'
+import { Preload, OrbitControls } from '@react-three/drei'
 import { EffectComposer, Bloom, ChromaticAberration, DepthOfField } from '@react-three/postprocessing'
 
 import CustomCursor from './components/CustomCursor/CustomCursor'
@@ -17,10 +17,12 @@ import ThemeToggle from './components/ThemeToggle/ThemeToggle'
 import InfixPanel from './components/InfixPanel/InfixPanel'
 import ParenthesesPanel from './components/ParenthesesPanel/ParenthesesPanel'
 import QuizPanel from './components/QuizPanel/QuizPanel'
+import QuizOverlay from './components/Quiz/QuizOverlay'
 import CodeSandboxPanel from './components/CodeSandboxPanel/CodeSandboxPanel'
 
 import { useAppStore } from './store/dsStore'
 import { useAudio } from './hooks/useAudio'
+import { useQuizTimer } from './hooks/useQuizTimer'
 
 // Handles camera responsiveness
 function CameraRig() {
@@ -49,6 +51,8 @@ export default function App() {
   // Audio synths
   const { play } = useAudio()
   const [showInfix, setShowInfix] = useState(false)
+  
+  useQuizTimer()
 
   // Zustand State
   const currentScene = useAppStore(s => s.currentScene)
@@ -687,6 +691,16 @@ export default function App() {
           
           <AmbientParticles count={50} />
           
+          {currentScene !== 0 && (
+            <OrbitControls 
+              makeDefault 
+              enablePan={false} 
+              minDistance={10} 
+              maxDistance={50}
+              target={[0, 2, 0]}
+            />
+          )}
+
           <Suspense fallback={null}>
             <SceneManager sceneIndex={currentScene} />
             <Preload all />
@@ -704,9 +718,10 @@ export default function App() {
       {currentScene !== 0 && hasSeenIntro && <ControlPanel onOperation={handleOperation} />}
       {currentScene !== 0 && hasSeenIntro && <CodePanel activeOp={lastOp?.type} activeLine={activeLine} />}
       {currentScene !== 0 && hasSeenIntro && <HelpGuide />}
-      {currentScene === 1 && <InfixPanel visible={showInfix} />}
-      {currentScene === 1 && <ParenthesesPanel visible={showParentheses} />}
+      {currentScene === 1 && <InfixPanel visible={showInfix} onClose={() => setShowInfix(false)} />}
+      {currentScene === 1 && <ParenthesesPanel visible={showParentheses} onClose={toggleParentheses} />}
       <QuizPanel />
+      <QuizOverlay />
       <CodeSandboxPanel />
       <ThemeToggle />
     </>

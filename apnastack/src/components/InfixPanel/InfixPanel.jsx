@@ -8,10 +8,14 @@ const isOperator  = (c) => '+-*/^'.includes(c)
 const isOperand   = (c) => /[a-zA-Z0-9]/.test(c)
 
 function tokenize(expr) {
-  // supports multi-char operands e.g. "ab+cd" → ['ab','+','cd']
+  // supports multi-char operands and spaces e.g. "10 5 +"
   const tokens = []
   let buf = ''
-  for (const ch of expr.replace(/\s/g, '')) {
+  for (const ch of expr) {
+    if (ch === ' ') {
+      if (buf) { tokens.push(buf); buf = '' }
+      continue
+    }
     if (isOperand(ch)) { buf += ch }
     else {
       if (buf) { tokens.push(buf); buf = '' }
@@ -73,12 +77,76 @@ function buildSteps(tokens) {
   return steps
 }
 
+function buildPostfixEvalSteps(tokens) {
+  const steps = []
+  const stack = []
+
+  const snap = (token, action, explanation) => steps.push({
+    token, action, explanation,
+    stack: [...stack],
+    output: [], // not used for eval
+    result: stack[stack.length - 1]
+  })
+
+  for (const tok of tokens) {
+    if (isOperand(tok)) {
+      stack.push(tok)
+      snap(tok, 'push', `Operand '${tok}' → push onto stack`)
+    } else if (isOperator(tok)) {
+      if (stack.length < 2) continue
+      const op2 = stack.pop()
+      const op1 = stack.pop()
+      let res = 0
+      const n1 = parseFloat(op1), n2 = parseFloat(op2)
+      if (tok === '+') res = n1 + n2
+      else if (tok === '-') res = n1 - n2
+      else if (tok === '*') res = n1 * n2
+      else if (tok === '/') res = n1 / n2
+      else if (tok === '^') res = Math.pow(n1, n2)
+      
+      const rounded = Math.round(res * 100) / 100
+      stack.push(rounded.toString())
+      snap(tok, 'compute', `Operator '${tok}' → pop ${op1}, ${op2} and push result ${rounded}`)
+    }
+  }
+  return steps
+}
+
+function buildPostfixToInfixSteps(tokens) {
+  const steps = []
+  const stack = []
+
+  const snap = (token, action, explanation) => steps.push({
+    token, action, explanation,
+    stack: [...stack],
+    output: [],
+    result: stack[stack.length - 1]
+  })
+
+  for (const tok of tokens) {
+    if (isOperand(tok)) {
+      stack.push(tok)
+      snap(tok, 'push', `Operand '${tok}' → push onto stack`)
+    } else if (isOperator(tok)) {
+      if (stack.length < 2) continue
+      const op2 = stack.pop()
+      const op1 = stack.pop()
+      const combined = `(${op1}${tok}${op2})`
+      stack.push(combined)
+      snap(tok, 'pop-build', `Operator '${tok}' → pop ${op1}, ${op2} and push joined infix`)
+    }
+  }
+  return steps
+}
+
 /* ─── Visual tokens ─────────────────────────────────────────────────────────── */
 const TOKEN_COLOR = {
   output:       'var(--accent)',
   push:         'var(--accent2)',
   'pop-higher': '#ff8800',
   'pop-until':  '#ff4444',
+  'pop-build':  '#ff4444',
+  compute:      '#00ff44',
   drain:        '#aaaaaa',
 }
 
@@ -109,7 +177,8 @@ function TokenChip({ tok, highlight }) {
 }
 
 /* ─── Main component ─────────────────────────────────────────────────────────── */
-export default function InfixPanel({ visible }) {
+export default function InfixPanel({ visible, onClose }) {
+  const [mode,     setMode]     = useState('infixToPostfix') // 'infixToPostfix' | 'postfixToInfix' | 'postfixEval'
   const [expr,     setExpr]     = useState('a+b*c-d/e')
   const [steps,    setSteps]    = useState([])
   const [stepIdx,  setStepIdx]  = useState(-1)
@@ -129,7 +198,12 @@ export default function InfixPanel({ visible }) {
     try {
       const tokens = tokenize(expr)
       if (!tokens.length) throw new Error('Empty expression')
-      const built = buildSteps(tokens)
+      
+      let built = []
+      if (mode === 'infixToPostfix') built = buildSteps(tokens)
+      else if (mode === 'postfixEval') built = buildPostfixEvalSteps(tokens)
+      else built = buildPostfixToInfixSteps(tokens)
+      
       setSteps(built)
       setStepIdx(0)
     } catch (e) {
@@ -150,12 +224,19 @@ export default function InfixPanel({ visible }) {
     timerRef.current = setTimeout(tick, 900)
   }
 
+  useEffect(() => {
+    if (mode === 'infixToPostfix') setExpr('a+b*c-d/e')
+    else if (mode === 'postfixEval') setExpr('10 5 + 3 *')
+    else setExpr('a b + c *')
+    reset()
+  }, [mode])
+
   useEffect(() => () => clearTimeout(timerRef.current), [])
 
   if (!visible) return null
 
   const finalResult = stepIdx === steps.length - 1
-    ? steps[steps.length - 1]?.output.join(' ')
+    ? (mode === 'infixToPostfix' ? steps[steps.length - 1]?.output.join(' ') : steps[steps.length - 1]?.stack[0])
     : null
 
   return (
@@ -181,19 +262,65 @@ export default function InfixPanel({ visible }) {
           fontFamily: 'Syne, sans-serif',
         }}
       >
-        {/* Title */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-          <span style={{ color: 'var(--accent)', fontSize: 11, letterSpacing: '0.2em', fontWeight: 700 }}>
-            INFIX → POSTFIX  ·  STACK DEMO
-          </span>
+        <button 
+          onClick={onClose}
+          style={{
+            position: 'absolute',
+            top: '16px',
+            right: '20px',
+            background: 'transparent',
+            border: 'none',
+            color: 'var(--text-dim)',
+            fontSize: '18px',
+            cursor: 'pointer',
+            padding: '4px',
+            zIndex: 10
+          }}
+          onMouseOver={(e) => e.currentTarget.style.color = 'var(--accent)'}
+          onMouseOut={(e) => e.currentTarget.style.color = 'var(--text-dim)'}
+        >
+          ✕
+        </button>
+
+        {/* Mode Selector */}
+        <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
+          {[
+            { id: 'infixToPostfix', label: 'INFIX → POSTFIX' },
+            { id: 'postfixToInfix', label: 'POSTFIX → INFIX' },
+            { id: 'postfixEval', label: 'POSTFIX EVAL' },
+          ].map(m => (
+            <button
+              key={m.id}
+              onClick={() => setMode(m.id)}
+              style={{
+                background: mode === m.id ? 'var(--accent)' : 'transparent',
+                color: mode === m.id ? 'var(--bg)' : 'var(--text-dim)',
+                border: 'none',
+                borderRadius: 6,
+                padding: '4px 10px',
+                fontSize: 10,
+                fontWeight: 800,
+                letterSpacing: '0.1em',
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+            >
+              {m.label}
+            </button>
+          ))}
         </div>
+
 
         {/* Expression input */}
         <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
           <input
             value={expr}
             onChange={e => { reset(); setExpr(e.target.value) }}
-            placeholder="e.g. a+b*c or (a+b)*(c-d)"
+            placeholder={
+              mode === 'infixToPostfix' ? "e.g. a+b*c" : 
+              mode === 'postfixEval' ? "e.g. 10 5 + 3 *" : 
+              "e.g. a b + c *"
+            }
             style={{
               flex: 1,
               padding: '9px 14px',
@@ -286,7 +413,7 @@ export default function InfixPanel({ visible }) {
                 padding: '10px 14px',
               }}>
                 <div style={{ fontSize: 10, letterSpacing: '0.2em', color: 'var(--text-dim)', marginBottom: 8 }}>
-                  OPERATOR STACK
+                  {mode === 'infixToPostfix' ? 'OPERATOR STACK' : 'OPERAND STACK'}
                 </div>
                 <div style={{ minHeight: 36, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                   <AnimatePresence>
@@ -308,13 +435,13 @@ export default function InfixPanel({ visible }) {
                 padding: '10px 14px',
               }}>
                 <div style={{ fontSize: 10, letterSpacing: '0.2em', color: 'var(--text-dim)', marginBottom: 8 }}>
-                  OUTPUT (POSTFIX)
+                  {mode === 'infixToPostfix' ? 'OUTPUT (POSTFIX)' : 'CURRENT EXPRESSION'}
                 </div>
                 <div style={{ minHeight: 36, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                   <AnimatePresence>
-                    {currentStep?.output.length === 0
+                    {(mode === 'infixToPostfix' ? currentStep?.output : currentStep?.stack).length === 0
                       ? <span style={{ color: 'var(--text-dim)', fontSize: 13 }}>empty</span>
-                      : currentStep?.output.map((t, i) => (
+                      : (mode === 'infixToPostfix' ? currentStep?.output : currentStep?.stack).map((t, i) => (
                           <TokenChip key={i + '-' + t} tok={t} highlight={false} />
                         ))
                     }
@@ -342,7 +469,7 @@ export default function InfixPanel({ visible }) {
                     boxShadow: '0 0 20px color-mix(in srgb, var(--accent) 20%, transparent)',
                   }}
                 >
-                  ✓ Postfix result: {finalResult}
+                  ✓ {mode === 'infixToPostfix' ? 'Postfix result: ' : mode === 'postfixEval' ? 'Evaluation result: ' : 'Infix result: '} {finalResult}
                 </motion.div>
               )}
             </AnimatePresence>

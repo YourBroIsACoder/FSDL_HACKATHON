@@ -84,10 +84,10 @@ export default function IntroOverlay() {
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.8 }}
-            className="max-w-4xl text-center space-y-8"
+            className="w-full text-center space-y-8"
           >
             <div className="space-y-2">
-              <h1 className="text-6xl md:text-8xl font-black font-['Syne'] text-transparent bg-clip-text bg-white drop-shadow-[0_0_30px_rgba(0,255,224,0.3)] tracking-widest uppercase">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-black font-['Syne'] text-transparent bg-clip-text bg-white drop-shadow-[0_0_30px_rgba(0,255,224,0.3)] tracking-tight uppercase px-4">
                 {data.title}
               </h1>
               <h3 className="text-xl md:text-3xl text-[#00ffe0] font-['JetBrains_Mono'] tracking-wider uppercase opacity-90">

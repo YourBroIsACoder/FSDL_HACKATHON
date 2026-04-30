@@ -3,35 +3,36 @@
       "name": "Akshath Narvekar",
       "role": "[ SYSTEM ARCHITECT ]",
       "description": "I forge algorithms from raw entropy. Unraveling recursion is my native language.",
-      "linkedin": "#",
-      "email": "akshath@algoreef.dev"
+      "linkedin": "https://www.linkedin.com/in/akshath-narvekar-0863322a3/"
+    },
+    {
+      "name": "Shreyas Thale",
+      "role": "[ DATA ALCHEMIST ]",
+      "description": "I turn arrays into magic. Pushing the boundaries of what's computationally possible.",
+      "linkedin": "https://www.linkedin.com/in/shreyas-thale/"
     },
     {
       "name": "Prarthana Nathar",
       "role": "[ NEURAL WIZARD ]",
       "description": "Optimizing graph transversals while the rest of the world sleeps.",
-      "linkedin": "#",
-      "email": "prarthana@algoreef.dev"
+      "linkedin": "https://www.linkedin.com/in/prarthana-nathar-570507333/"
     },
     {
       "name": "Elvina Binoy",
       "role": "[ SHADOW CODER ]",
       "description": "Dynamic Programming isn't math. It's remembering the past to hack the future.",
-      "linkedin": "#",
-      "email": "elvina@algoreef.dev"
+      "linkedin": "https://www.linkedin.com/in/elvinabinoy/"
     },
     {
       "name": "Aarushi Sontakke",
       "role": "[ WEBGL DEMON ]",
       "description": "Physics engines and frag shaders. I make the invisible data structures bleed light.",
-      "linkedin": "#",
-      "email": "aarushi@algoreef.dev"
+      "linkedin": "https://www.linkedin.com/in/aarushi-sontakke-101b63287/"
     },
     {
       "name": "Rhea Varghese",
       "role": "[ KERNEL HACKER ]",
       "description": "O(log n) is too slow. I optimize until the hardware itself begs for mercy.",
-      "linkedin": "#",
-      "email": "rhea@algoreef.dev"
+      "linkedin": "https://www.linkedin.com/in/rhea-varghese-j20/"
     }
 ]

@@ -38,8 +38,7 @@ function CameraRig() {
 function PostProcessing() {
   return (
     <EffectComposer disableNormalPass>
-      {/* Reduced DOF blur to maintain text clarity on components */}
-      <DepthOfField focusDistance={0} focalLength={0.01} bokehScale={1.2} />
+      {/* DepthOfField removed for performance */}
       <Bloom luminanceThreshold={0.5} mipmapBlur intensity={1.2} />
       <ChromaticAberration offset={[0.001, 0.001]} />
     </EffectComposer>
@@ -682,11 +681,11 @@ export default function App() {
 
       {/* R3F Canvas Container */}
       <div className="canvas-container interactive-canvas">
-        <Canvas camera={{ position: [0, 5, 20], fov: 45 }} dpr={[1, 1.5]}>
+        <Canvas camera={{ position: [0, 5, 20], fov: 45 }} dpr={1} performance={{ min: 0.5 }}>
           <color attach="background" args={[theme === 'light' ? '#fff8f0' : '#0a0a0f']} />
           <ambientLight intensity={0.5} />
           
-          <AmbientParticles count={250} />
+          <AmbientParticles count={50} />
           
           <Suspense fallback={null}>
             <SceneManager sceneIndex={currentScene} />
